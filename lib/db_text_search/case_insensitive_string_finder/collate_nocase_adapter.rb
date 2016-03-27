@@ -1,15 +1,14 @@
+require 'db_text_search/case_insensitive_string_finder/adapter'
 module DbTextSearch
   class CaseInsensitiveStringFinder
-    class CollateNocaseAdapter
-      # @param [ActiveRecord::Relation, Class<ActiveRecord::Base>] scope
-      # @param [Symbol] column name
+    class CollateNocaseAdapter < Adapter
+      # (see Adapter#initialize)
       def initialize(scope, column)
         @scope  = scope
         @column = column
       end
 
-      # @param [Array<String>] values
-      # @return [ActiveRecord::Relation]
+      # (see Adapter#find)
       def find(values)
         conn = @scope.connection
         @scope.where <<-SQL
