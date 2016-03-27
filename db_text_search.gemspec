@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
   s.required_ruby_version = '~> 2.1'
 
-  s.add_dependency 'activerecord', '>= 4.0', '< 6.0'
+  s.add_dependency 'activerecord', '>= 4.1.15', '< 6.0'
 
   s.add_development_dependency 'sqlite3', '~> 1.3.11'
   s.add_development_dependency 'mysql2', '>= 0.3.20'
