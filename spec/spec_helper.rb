@@ -1,8 +1,8 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 if ENV['TRAVIS'] && !(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx')
-  require 'codeclimate-test-reporter'
-  CodeClimate::TestReporter.start do
+  require 'codeclimate_batch'
+  CodeclimateBatch.start do
     add_filter '/lib/db_text_search/case_insensitive_string_finder/adapter.rb'
   end
 end
