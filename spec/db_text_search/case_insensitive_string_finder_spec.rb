@@ -27,6 +27,15 @@ module DbTextSearch
       end
     end
 
+    # TODO tests
+    if ENV['DB'] =~ /postgresql/i
+      xcontext 'citext column'
+    elsif ENV['DB'] =~ /mysql/i
+      xcontext 'case-sensitive collation column'
+    elsif ENV['DB'] =~ /sqlite/i
+      xcontext 'COLLATE NOCASE column'
+    end
+
     class Name < ActiveRecord::Base
     end
 
