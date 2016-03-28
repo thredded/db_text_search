@@ -27,14 +27,12 @@ case ENV['DB']
         password:     ENV['DB_PASSWORD'] || 'db_text_search'
     }
     if ENV['DB'] == 'postgresql'
-      # Must be required before establish_connection.
-      require 'schema_plus_pg_indexes'
-      # TODO: Switch to native Rails support once it lands.
-      # These PRs provide native support (any one is enough):
-      # https://github.com/rails/rails/pull/13684
-      # https://github.com/rails/rails/pull/18499
-      # https://github.com/rails/rails/pull/19090
-      # https://github.com/rails/rails/pull/23393
+      begin
+        # Must be required before establish_connection.
+        require 'schema_plus_pg_indexes'
+      rescue LoadError
+        # Nothing to do here, optional dependency
+      end
     end
     ActiveRecord::Tasks::DatabaseTasks.create(config.stringify_keys)
     ActiveRecord::Base.establish_connection(config)

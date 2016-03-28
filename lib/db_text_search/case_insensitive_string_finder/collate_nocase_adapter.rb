@@ -21,8 +21,10 @@ module DbTextSearch
       def self.add_index(connection, table_name, column_name, options = {})
         # TODO: Switch to the native Rails solution once it's landed, as the current one requires SQL dump format.
         # https://github.com/rails/rails/pull/18499
+        index_name = options[:name] || options[:name] || "#{column_name}_nocase"
+        fail "Unsuported options: #{options.keys - [:name]}" if options.size > 1
         connection.execute <<-SQL.strip
-          CREATE INDEX #{options[:name] || "#{column_name}_nocase"} ON #{connection.quote_table_name(table_name)}
+          CREATE INDEX #{index_name} ON #{connection.quote_table_name(table_name)}
             (#{connection.quote_column_name(column_name)} COLLATE NOCASE);
         SQL
       end

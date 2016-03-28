@@ -10,10 +10,11 @@ env:
 - DB=sqlite3
 after_script:
 # groups must equal to the total number of jobs
-- bundle exec codeclimate-batch --groups 3
+- bundle exec codeclimate-batch --groups 6
 cache: bundler
 bundler_args: --path ../../vendor/bundle --without debug
 gemfile:
+- spec/gemfiles/rails_4_1.gemfile
 - spec/gemfiles/rails_4_2.gemfile
 addons:
   code_climate:

@@ -28,7 +28,7 @@ module DbTextSearch
     # @param column_name [String, Symbol]
     # @return [Class<Adapter>]
     def self.adapter_class(connection, table_name, column_name)
-      column = connection.send(:column_for, table_name, column_name)
+      column = connection.columns(table_name).detect { |c| c.name == column_name.to_s }
       case connection.adapter_name.downcase
         when /mysql/
           if column.case_sensitive?

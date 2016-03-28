@@ -20,11 +20,21 @@ module DbTextSearch
       # (see Adapter.add_index)
       def self.add_index(connection, table_name, column_name, options = {})
         if connection.adapter_name =~ /postgres/i
-          # TODO: Currently using schema_plus_pg_indexes. Switch to native Rails support once it lands.
-          connection.add_index(
-              table_name, column_name,
-              {name: "#{column_name}_lower"}.merge(options)
-                  .merge(expression: "LOWER(#{connection.quote_column_name(column_name)})"))
+          # TODO: Switch to native Rails support once it lands.
+          # https://github.com/rails/rails/pull/18499
+          if defined?(SchemaPlus)
+            connection.add_index(
+                table_name, column_name,
+                {name: "#{column_name}_lower"}.merge(options)
+                    .merge(expression: "LOWER(#{connection.quote_column_name(column_name)})"))
+          else
+            index_name = options[:name] || options[:name] || "#{column_name}_lower"
+            fail "Unsuported options: #{options.keys - [:name]}" if options.size > 1
+            connection.execute <<-SQL.strip
+              CREATE INDEX #{index_name} ON #{connection.quote_table_name(table_name)}
+                (LOWER(#{connection.quote_column_name(column_name)}));
+            SQL
+          end
         elsif connection.adapter_name =~ /mysql/i
           fail 'MySQL case-insensitive index creation for case-sensitive columns is not yet implemented.'
         else
