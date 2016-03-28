@@ -19,9 +19,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'activerecord', '>= 4.1.15', '< 6.0'
 
-  s.add_development_dependency 'sqlite3', '~> 1.3.11'
+  s.add_development_dependency 'sqlite3', '>= 1.3.11'
   s.add_development_dependency 'mysql2', '>= 0.3.20'
-  s.add_development_dependency 'pg', '~> 0.18.4'
+  s.add_development_dependency 'pg', '>= 0.18.4'
+  s.add_development_dependency 'schema_plus_pg_indexes', '>= 0.1.10'
 
   s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'rake', '~> 10.2'

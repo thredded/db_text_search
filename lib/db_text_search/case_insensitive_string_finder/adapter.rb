@@ -13,6 +13,17 @@ module DbTextSearch
       def find(values)
         fail 'abstract'
       end
+
+      # Add an index for case-insensitive string search.
+      #
+      # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
+      # @param table_name [String, Symbol]
+      # @param column_name [String, Symbol]
+      # @param options [Hash] passed down to ActiveRecord::ConnectionAdapters::SchemaStatements#add_index.
+      # @return (see ActiveRecord::ConnectionAdapters::SchemaStatements#add_index)
+      def self.add_index(connection, table_name, column_name, options = {})
+        fail 'abstract'
+      end
     end
   end
 end

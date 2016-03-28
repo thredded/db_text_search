@@ -8,6 +8,24 @@ module DbTextSearch
       expect(finder.find('aBc').to_a).to eq names
     end
 
+    describe '.add_index' do
+      index_name = :index_name_ci
+      context 'called' do
+        before(:all) { CaseInsensitiveStringFinder.add_index Name.connection, :names, :name, name: index_name }
+        after(:all) { ActiveRecord::Migration.remove_index :names, name: index_name }
+
+        it 'the index is usable by #find' do
+          finder = CaseInsensitiveStringFinder.new(Name, :name)
+          force_index { expect(finder.find('aBc')).to use_index(index_name) }
+        end
+      end
+      context 'not called' do
+        it 'no index usable by #find' do
+          finder = CaseInsensitiveStringFinder.new(Name, :name)
+          force_index { expect(finder.find('aBc')).to_not use_index(index_name) }
+        end
+      end
+    end
 
     class Name < ActiveRecord::Base
     end
