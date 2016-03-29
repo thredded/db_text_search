@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-- 2.1
+- 2.2.4
 env:
 # Username and password from http://docs.travis-ci.com/user/database-setup/
 - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
