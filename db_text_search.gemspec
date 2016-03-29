@@ -8,8 +8,12 @@ Gem::Specification.new do |s|
   s.authors       = ['Gleb Mazovetskiy']
   s.email         = ['glex.spb@gmail.com']
 
-  s.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  s.description   = %q{TODO: Write a longer description or delete this line.}
+  s.summary       = %q{A unified interface on top of ActiveRecord for SQLite, MySQL, and PostgreSQL for case-insensitive string search and basic full-text search.}
+  s.description   = %q{Different relational databases treat text search very differently.
+DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MySQL, and PostgreSQL to do:
+* Case-insensitive string-in-set querying, and CI index creation.
+* Basic full-text search for a list of terms, and FTS index creation.
+}
   s.homepage      = 'https://github.com/thredded/db_text_search'
   s.license       = 'MIT'
 
