@@ -23,13 +23,11 @@ DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MyS
 
   s.add_dependency 'activerecord', '>= 4.1.15', '< 6.0'
 
-  s.add_development_dependency 'sqlite3', '>= 1.3.11'
   s.add_development_dependency 'mysql2', '>= 0.3.20'
   s.add_development_dependency 'pg', '>= 0.18.4'
+  s.add_development_dependency 'sqlite3', '>= 1.3.11'
 
-  s.add_development_dependency 'rspec', '~> 3.4'
-  s.add_development_dependency 'rake', '~> 10.2'
   s.add_development_dependency 'bundler', '~> 1.11'
   s.add_development_dependency 'rake', '~> 11.0'
-  s.add_development_dependency 'rspec', '~> 3.0'
+  s.add_development_dependency 'rspec', '~> 3.4'
 end
