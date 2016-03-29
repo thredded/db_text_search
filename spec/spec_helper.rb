@@ -63,7 +63,7 @@ end
 def explain_index_expr(index_name)
   case ActiveRecord::Base.connection.adapter_name
     when /mysql/i
-      /\b#{Regexp.escape index_name}\b.*Using index/
+      /\b(ref|index)\b.*\b#{Regexp.escape index_name}\b/
     when /sqlite/i
       /USING (?:COVERING )?INDEX #{Regexp.escape index_name}\b/
     when /postgres/i
