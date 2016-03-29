@@ -1,6 +1,6 @@
 # DbTextSearch [![Build Status](https://travis-ci.org/thredded/db_text_search.svg?branch=master)](https://travis-ci.org/thredded/db_text_search) [![Code Climate](https://codeclimate.com/github/thredded/db_text_search/badges/gpa.svg)](https://codeclimate.com/github/thredded/db_text_search) [![Test Coverage](https://codeclimate.com/github/thredded/db_text_search/badges/coverage.svg)](https://codeclimate.com/github/thredded/db_text_search/coverage)
 
-Relational databases treat text search very differently.
+Different relational databases treat text search very differently.
 DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MySQL, and PostgreSQL to do:
 
 * Case-insensitive string-in-set querying, and CI index creation.
@@ -17,6 +17,27 @@ gem 'db_text_search'
 ## Usage
 
 TODO: Write usage instructions here
+
+## Under the hood
+
+<table>
+<caption>Case-insensitive string matching methods</caption>
+<thead>
+  <tr><th rowspan="2">Column type</th><th colspan="2">SQLite</th><th colspan="2">MySQL</th><th colspan="2">PostgreSQL</th>
+  <tr><th>Detected types</th><th>Search / index</th><th>Detected types</th><th>Search / index</th><th>Detected types</th><th>Search / index</th></tr>
+</thead>
+<tbody style="text-align: center">
+  <tr><th>CI</th>
+      <td rowspan="2">always treated as CS</td> <td rowspan="2"><code>COLLATE&nbsp;NOCASE</code></td>
+      <td><i>default</i></td> <td><i>default</i></td>
+      <td><code>CITEXT</code></td> <td><i>default</i></td>
+  <tr><th>CS</th>
+    <td>non-<code>ci</code> collations</td> <td><code>LOWER</code><br><b>no index</b></td>
+    <td><i>default</i></td> <td><code>LOWER</code></td>
+  </tr>
+  </tr>
+</tbody>
+</table>
 
 ## Development
 

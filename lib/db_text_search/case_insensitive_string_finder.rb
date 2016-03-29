@@ -29,8 +29,8 @@ module DbTextSearch
     # @return [Class<Adapter>]
     def self.adapter_class(connection, table_name, column_name)
       if connection.adapter_name.downcase =~ /sqlite/
-        # Always use COLLATE NOCASE for SQLite, as we can't check whether the column is case-sensitive.
-        # It has no performance impact apart for slightly longer query strings for case-insensitive columns.
+        # Always use COLLATE NOCASE for SQLite, as we can't check if the column is case-sensitive.
+        # It has no performance impact apart from slightly longer query strings for case-insensitive columns.
         CollateNocaseAdapter
       elsif column_case_sensitive?(connection, table_name, column_name)
         LowerAdapter
