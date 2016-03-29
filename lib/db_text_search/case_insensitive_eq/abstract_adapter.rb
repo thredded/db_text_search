@@ -1,12 +1,15 @@
+require 'db_text_search/query_building'
 module DbTextSearch
   class CaseInsensitiveEq
-    # A base class for CaseInsensitiveStringFinder adapters, for documentation purposes.
-    class Adapter
+    # A base class for CaseInsensitiveStringFinder adapters.
+    class AbstractAdapter
+      include ::DbTextSearch::QueryBuilding
+
       # @param scope [ActiveRecord::Relation, Class<ActiveRecord::Base>]
       # @param column [Symbol] name
-      # @abstract
       def initialize(scope, column)
-        fail 'abstract'
+        @scope  = scope
+        @column = column
       end
 
       # @param values [Array<String>]

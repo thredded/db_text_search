@@ -5,14 +5,14 @@ require 'db_text_search/case_insensitive_eq/collate_nocase_adapter'
 module DbTextSearch
   # Provides case-insensitive string-in-set querying, and CI index creation.
   class CaseInsensitiveEq
-    # (see Adapter)
+    # (see AbstractAdapter)
     def initialize(scope, column)
       @adapter = self.class.adapter_class(scope.connection, scope.table_name, column).new(scope, column)
       @scope   = scope
     end
 
     # @param value_or_values [String, Array<String>]
-    # @return (see Adapter#find)
+    # @return (see AbstractAdapter#find)
     def find(value_or_values)
       values = Array(value_or_values)
       return @scope.none if values.empty?
@@ -46,7 +46,7 @@ module DbTextSearch
       end
     end
 
-    # (see Adapter.add_index)
+    # (see AbstractAdapter.add_index)
     def self.add_index(connection, table_name, column_name, options = {})
       adapter_class(connection, table_name, column_name).add_index(connection, table_name, column_name, options)
     end
@@ -54,7 +54,7 @@ module DbTextSearch
     # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
     # @param table_name [String, Symbol]
     # @param column_name [String, Symbol]
-    # @return [Class<Adapter>]
+    # @return [Class<AbstractAdapter>]
     def self.adapter_class(connection, table_name, column_name)
       if connection.adapter_name.downcase =~ /sqlite/
         # Always use COLLATE NOCASE for SQLite, as we can't check if the column is case-sensitive.
