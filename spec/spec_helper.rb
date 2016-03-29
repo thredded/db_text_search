@@ -63,7 +63,7 @@ def explain_index_expr(index_name)
     when /mysql/i
       /\b#{Regexp.escape index_name}\b.*Using index/
     when /sqlite/i
-      "USING COVERING INDEX #{index_name}"
+      /USING (?:COVERING )?INDEX #{Regexp.escape index_name}\b/
     when /postgres/i
       "Index Scan using #{index_name}"
     else
@@ -71,6 +71,9 @@ def explain_index_expr(index_name)
   end
 end
 
+def psql_su_cmd
+  system(%q{psql postgres -c '' 2>/dev/null}) ? 'psql' : 'sudo -u postgres psql -U postgres'
+end
 
 RSpec::Matchers.define :use_index do |index_name|
   match do |scope|

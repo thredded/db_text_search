@@ -28,28 +28,31 @@ module DbTextSearch
     # @param column_name [String, Symbol]
     # @return [Class<Adapter>]
     def self.adapter_class(connection, table_name, column_name)
+      if connection.adapter_name.downcase =~ /sqlite/
+        # Always use CollateNocase for SQLite, as we can't check wheteher the column is case-sensitive.
+        # It has no performance impact apart for slightly longer query strings for case-insensitive columns.
+        CollateNocaseAdapter
+      elsif column_case_sensitive?(connection, table_name, column_name)
+        LowerAdapter
+      else
+        InsensitiveColumnAdapter
+      end
+    end
+
+    # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
+    # @param table_name [String, Symbol]
+    # @param column_name [String, Symbol]
+    # @return [Boolean]
+    # @note sqlite not supported.
+    def self.column_case_sensitive?(connection, table_name, column_name)
       column = connection.columns(table_name).detect { |c| c.name == column_name.to_s }
       case connection.adapter_name.downcase
         when /mysql/
-          if column.case_sensitive?
-            LowerAdapter
-          else
-            InsensitiveColumnAdapter
-          end
+          column.case_sensitive?
         when /postgresql/
-          if column.sql_type !~ /citext/i
-            LowerAdapter
-          else
-            InsensitiveColumnAdapter
-          end
-        when /sqlite/
-          if column.sql_type !~ /NOCASE/
-            CollateNocaseAdapter
-          else
-            InsensitiveColumnAdapter
-          end
+          column.sql_type !~ /citext/i
         else
-          fail "Please define a CaseInsensitiveStringFinder adapter for #{connection.adapter_name}"
+          fail "Unsupported adapter #{connection.adapter_name}"
       end
     end
   end

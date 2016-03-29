@@ -2,38 +2,39 @@ require 'spec_helper'
 
 module DbTextSearch
   RSpec.describe CaseInsensitiveStringFinder do
-    it '#find(value)' do
-      names  = %w(ABC abC abc).map { |name| Name.create!(name: name) }
-      finder = CaseInsensitiveStringFinder.new(Name, :name)
-      expect(finder.find('aBc').to_a).to eq names
+    column_cases = [['case-insensitive', :ci_name], ['case-sensitive', :cs_name]]
+    describe '#find(value)' do
+      let!(:records) { %w(ABC abC abc).map { |name| Name.create!(ci_name: name, cs_name: name) } }
+      column_cases.each do |(column_desc, column)|
+        it "works with a #{column_desc} column" do
+          finder = CaseInsensitiveStringFinder.new(Name, column)
+          expect(finder.find('aBc').to_a).to eq records
+        end
+      end
     end
 
     describe '.add_index' do
-      index_name = :index_name_ci
-      context 'called' do
-        before(:all) { CaseInsensitiveStringFinder.add_index Name.connection, :names, :name, name: index_name }
-        after(:all) { ActiveRecord::Migration.remove_index :names, name: index_name }
-
-        it 'the index is usable by #find' do
-          finder = CaseInsensitiveStringFinder.new(Name, :name)
-          force_index { expect(finder.find('aBc')).to use_index(index_name) }
-        end
-      end
-      context 'not called' do
-        it 'no index usable by #find' do
-          finder = CaseInsensitiveStringFinder.new(Name, :name)
-          force_index { expect(finder.find('aBc')).to_not use_index(index_name) }
+      column_cases.each do |(column_desc, column)|
+        it "adds an index is usable by #find on a #{column_desc} column" do
+          if Name.connection.adapter_name =~ /mysql/i && column == :cs_name
+            skip 'MySQL case-insensitive index creation for case-sensitive columns is not yet implemented'
+          end
+          index_name = :an_index
+          force_index { expect(CaseInsensitiveStringFinder.new(Name, column).find('aBc')).to_not use_index(index_name) }
+          begin
+            CaseInsensitiveStringFinder.add_index Name.connection, :names, column, name: index_name
+            force_index { expect(CaseInsensitiveStringFinder.new(Name, column).find('aBc')).to use_index(index_name) }
+          ensure
+            ActiveRecord::Migration.remove_index :names, name: index_name
+          end
         end
       end
     end
 
-    # TODO tests
-    if ENV['DB'] =~ /postgresql/i
-      xcontext 'citext column'
-    elsif ENV['DB'] =~ /mysql/i
-      xcontext 'case-sensitive collation column'
-    elsif ENV['DB'] =~ /sqlite/i
-      xcontext 'COLLATE NOCASE column'
+    it '.column_case_sensitive?' do
+      skip 'not implemented' if Name.connection.adapter_name =~ /sqlite/i
+      expect(CaseInsensitiveStringFinder.column_case_sensitive?(Name.connection, :names, :cs_name)).to be_truthy
+      expect(CaseInsensitiveStringFinder.column_case_sensitive?(Name.connection, :names, :ci_name)).to be_falsey
     end
 
     class Name < ActiveRecord::Base
@@ -47,7 +48,25 @@ module DbTextSearch
       ActiveRecord::Schema.define do
         self.verbose = false
         create_table :names do |t|
-          t.string :name
+          case connection.adapter_name
+            when /mysql/i
+              t.string :ci_name
+              t.column :cs_name, 'VARCHAR(191) COLLATE utf8_bin'
+            when /postgres/i
+              begin
+                connection.enable_extension 'citext'
+              rescue ActiveRecord::StatementInvalid
+                fail "Please run the command below to enable the 'citext' Postgres extension:\n" <<
+                         "#{psql_su_cmd} -d #{ActiveRecord::Base.connection_config[:database]} -c 'CREATE EXTENSION citext;'"
+              end
+              t.column :ci_name, 'CITEXT'
+              t.string :cs_name
+            when /sqlite/i
+              t.column :ci_name, 'VARCHAR(191) COLLATE NOCASE'
+              t.string :cs_name
+            else
+              fail "unknown adapter #{connection.adapter_name}"
+          end
         end
       end
     end

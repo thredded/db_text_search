@@ -12,8 +12,7 @@ module DbTextSearch
       def find(values)
         conn = @scope.connection
         @scope.where <<-SQL.strip
-          #{conn.quote_table_name(@scope.table_name)}.#{conn.quote_column_name(@column)} COLLATE NOCASE
-          IN (#{values.map { |v| conn.quote(v.to_s) }.join(', ')})
+          #{conn.quote_table_name(@scope.table_name)}.#{conn.quote_column_name(@column)} COLLATE NOCASE IN (#{values.map { |v| conn.quote(v.to_s) }.join(', ')})
         SQL
       end
 

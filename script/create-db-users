@@ -34,7 +34,7 @@ create_postgresql_user() {
   fi
   $cmd --echo-all <<SQL
 CREATE ROLE $USER LOGIN PASSWORD '$PASS';
-ALTER USER $USER CREATEDB;
+ALTER ROLE $USER CREATEDB;
 SQL
 }
 

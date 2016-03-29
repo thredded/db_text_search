@@ -12,8 +12,7 @@ module DbTextSearch
       def find(values)
         conn = @scope.connection
         @scope.where <<-SQL.strip
-          LOWER(#{conn.quote_table_name(@scope.table_name)}.#{conn.quote_column_name(@column)})
-            IN (#{values.map { |v| "LOWER(#{conn.quote(v.to_s)})" }.join(', ')})
+          LOWER(#{conn.quote_table_name(@scope.table_name)}.#{conn.quote_column_name(@column)}) IN (#{values.map { |v| "LOWER(#{conn.quote(v.to_s)})" }.join(', ')})
         SQL
       end
 
@@ -34,7 +33,7 @@ module DbTextSearch
             SQL
           end
         elsif connection.adapter_name =~ /mysql/i
-          fail 'MySQL case-insensitive index creation for case-sensitive columns is not yet implemented.'
+          fail 'MySQL case-insensitive index creation for case-sensitive columns is not supported.'
         else
           fail "Cannot create a case-insensitive index for case-sensitive column on #{connection.adapter_name}."
         end

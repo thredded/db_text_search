@@ -1,15 +1,17 @@
 language: ruby
 rvm:
 - 2.1
-before_install:
-- "gem install bundler --no-document"
 env:
 # Username and password from http://docs.travis-ci.com/user/database-setup/
 - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
 - DB=mysql2     DB_USERNAME=travis   DB_PASSWORD=""
 - DB=sqlite3
+before_install:
+- "gem install bundler --no-document"
+- >-
+  [ "$DB" = 'postgresql' ] && psql -d template1 -c "CREATE EXTENSION citext;" -U postgres
 after_script:
-# groups must equal to the total number of jobs
+# NB: --groups must equal to the total number of jobs
 - bundle exec codeclimate-batch --groups 6
 cache: bundler
 bundler_args: --path ../../vendor/bundle --without debug
