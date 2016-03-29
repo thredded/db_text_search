@@ -22,16 +22,14 @@ module DbTextSearch
         if connection.adapter_name =~ /postgres/i
           # TODO: Switch to native Rails support once it lands.
           # https://github.com/rails/rails/pull/18499
+          index_name = options[:name] || "#{column_name}_lower"
           if defined?(SchemaPlus)
-            connection.add_index(
-                table_name, column_name,
-                {name: "#{column_name}_lower"}.merge(options)
-                    .merge(expression: "LOWER(#{connection.quote_column_name(column_name)})"))
+            connection.add_index(table_name, column_name, options.merge(
+                name: index_name, expression: "LOWER(#{connection.quote_column_name(column_name)})"))
           else
-            index_name = options[:name] || options[:name] || "#{column_name}_lower"
-            fail "Unsuported options: #{options.keys - [:name]}" if options.size > 1
+            options.assert_valid_keys(:name, :unique)
             connection.execute <<-SQL.strip
-              CREATE INDEX #{index_name} ON #{connection.quote_table_name(table_name)}
+              CREATE #{'UNIQUE ' if options[:unique]}INDEX #{index_name} ON #{connection.quote_table_name(table_name)}
                 (LOWER(#{connection.quote_column_name(column_name)}));
             SQL
           end
