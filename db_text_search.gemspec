@@ -17,7 +17,7 @@ DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MyS
   s.homepage      = 'https://github.com/thredded/db_text_search'
   s.license       = 'MIT'
 
-  s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(spec|bin|script)/|\.|Rakefile}) }
+  s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(spec|bin|script)/|^\.|Rakefile|Gemfile}) }
   s.require_paths = ['lib']
   s.required_ruby_version = '~> 2.1'
 
