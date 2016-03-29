@@ -3,7 +3,7 @@ ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 if ENV['TRAVIS'] && !(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx')
   require 'codeclimate_batch'
   CodeclimateBatch.start do
-    add_filter '/lib/db_text_search/case_insensitive_string_finder/adapter.rb'
+    add_filter '/lib/db_text_search/case_insensitive_eq/adapter.rb'
   end
 end
 require 'db_text_search'
@@ -53,10 +53,10 @@ def force_index
           nil
       end
   begin
-    ActiveRecord::Base.connection.execute enable_force_index if enable_force_index
+    ActiveRecord::Base.connection.execute(enable_force_index).tap { |r| r && r.clear } if enable_force_index
     yield
   ensure
-    ActiveRecord::Base.connection.execute disable_force_index if disable_force_index
+    ActiveRecord::Base.connection.execute(disable_force_index).tap { |r| r && r.clear } if disable_force_index
   end
 end
 

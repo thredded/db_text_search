@@ -1,6 +1,6 @@
-require 'db_text_search/case_insensitive_string_finder/adapter'
+require 'db_text_search/case_insensitive_eq/adapter'
 module DbTextSearch
-  class CaseInsensitiveStringFinder
+  class CaseInsensitiveEq
     class LowerAdapter < Adapter
       # (see Adapter#initialize)
       def initialize(scope, column)
@@ -27,7 +27,7 @@ module DbTextSearch
                 name: index_name, expression: "LOWER(#{connection.quote_column_name(column_name)})"))
           else
             options.assert_valid_keys(:name, :unique)
-            connection.execute <<-SQL.strip
+            connection.exec_query <<-SQL.strip
               CREATE #{'UNIQUE ' if options[:unique]}INDEX #{index_name} ON #{connection.quote_table_name(table_name)}
                 (LOWER(#{connection.quote_column_name(column_name)}));
             SQL

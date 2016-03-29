@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 module DbTextSearch
-  RSpec.describe CaseInsensitiveStringFinder do
+  RSpec.describe CaseInsensitiveEq do
     column_cases = [['case-insensitive', :ci_name], ['case-sensitive', :cs_name]]
     describe '#find(value)' do
       let!(:records) { %w(ABC abC abc).map { |name| Name.create!(ci_name: name, cs_name: name) } }
       column_cases.each do |(column_desc, column)|
         it "works with a #{column_desc} column" do
-          finder = CaseInsensitiveStringFinder.new(Name, column)
+          finder = CaseInsensitiveEq.new(Name, column)
           expect(finder.find('aBc').to_a).to eq records
         end
       end
@@ -20,21 +20,52 @@ module DbTextSearch
             skip 'MySQL case-insensitive index creation for case-sensitive columns is not yet implemented'
           end
           index_name = :an_index
-          force_index { expect(CaseInsensitiveStringFinder.new(Name, column).find('aBc')).to_not use_index(index_name) }
+          force_index { expect(CaseInsensitiveEq.new(Name, column).find('aBc')).to_not use_index(index_name) }
           begin
-            CaseInsensitiveStringFinder.add_index Name.connection, :names, column, name: index_name
-            force_index { expect(CaseInsensitiveStringFinder.new(Name, column).find('aBc')).to use_index(index_name) }
+            CaseInsensitiveEq.add_index Name.connection, :names, column, name: index_name
+            force_index { expect(CaseInsensitiveEq.new(Name, column).find('aBc')).to use_index(index_name) }
           ensure
-            ActiveRecord::Migration.remove_index :names, name: index_name
+            if Name.connection.adapter_name =~ /postgres/i
+              # Work around https://github.com/rails/rails/issues/24359
+              Name.connection.exec_query %Q(DROP INDEX #{index_name})
+            else
+              ActiveRecord::Migration.remove_index :names, name: index_name
+            end
           end
+        end
+      end
+    end
+
+    describe '.add_ci_text_column' do
+      column = :ci_text
+      before :all do
+        CaseInsensitiveEq.add_ci_text_column Name.connection, :names, column
+        Name.reset_column_information
+        ActiveRecord::Base.connection.schema_cache.clear!
+      end
+      after :all do
+        ActiveRecord::Migration.remove_column :names, column
+        Name.reset_column_information
+        ActiveRecord::Base.connection.schema_cache.clear!
+      end
+      it 'adds a case-insensitive column' do
+        if Name.connection.adapter_name =~ /sqlite/i
+          # check not implemented, so just check that a search uses index
+          ActiveRecord::Migration.add_index :names, column, name: :"#{column}_index"
+          finder = CaseInsensitiveEq.new(Name, column)
+          record = Name.create!(ci_name: 'Abc', cs_name: 'Abc', column => 'Abc')
+          expect(finder.find('aBc')).to use_index(:"#{column}_index")
+          expect(finder.find('aBc').first).to eq record
+        else
+          expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, column)).to be_falsey
         end
       end
     end
 
     it '.column_case_sensitive?' do
       skip 'not implemented' if Name.connection.adapter_name =~ /sqlite/i
-      expect(CaseInsensitiveStringFinder.column_case_sensitive?(Name.connection, :names, :cs_name)).to be_truthy
-      expect(CaseInsensitiveStringFinder.column_case_sensitive?(Name.connection, :names, :ci_name)).to be_falsey
+      expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, :cs_name)).to be_truthy
+      expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, :ci_name)).to be_falsey
     end
 
     class Name < ActiveRecord::Base
@@ -69,10 +100,12 @@ module DbTextSearch
           end
         end
       end
+      ActiveRecord::Base.connection.schema_cache.clear!
     end
 
     after :all do
       ActiveRecord::Migration.drop_table :names
+      ActiveRecord::Base.connection.schema_cache.clear!
     end
   end
 end

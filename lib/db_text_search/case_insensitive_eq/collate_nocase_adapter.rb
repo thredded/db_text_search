@@ -1,6 +1,6 @@
-require 'db_text_search/case_insensitive_string_finder/adapter'
+require 'db_text_search/case_insensitive_eq/adapter'
 module DbTextSearch
-  class CaseInsensitiveStringFinder
+  class CaseInsensitiveEq
     class CollateNocaseAdapter < Adapter
       # (see Adapter#initialize)
       def initialize(scope, column)
@@ -22,7 +22,7 @@ module DbTextSearch
         # https://github.com/rails/rails/pull/18499
         options.assert_valid_keys(:name, :unique)
         index_name = options[:name] || options[:name] || "#{column_name}_nocase"
-        connection.execute <<-SQL.strip
+        connection.exec_query <<-SQL.strip
           CREATE #{'UNIQUE ' if options[:unique]}INDEX #{index_name} ON #{connection.quote_table_name(table_name)}
             (#{connection.quote_column_name(column_name)} COLLATE NOCASE);
         SQL

@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
-gemspec
-gem 'rails', '~> 5.0.0.beta3'
+gemspec path: '../../'
 eval_gemfile './shared.gemfile'
+gem 'rails', '~> 5.0.0.beta3'

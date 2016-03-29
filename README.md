@@ -16,7 +16,29 @@ gem 'db_text_search'
 
 ## Usage
 
-TODO: Write usage instructions here
+### Case-insensitive string matching
+
+Add an index in a migration to an existing CI or CS column:
+
+```ruby
+DbTextSearch::CaseInsensitiveEq.add_index connection, :users, :username
+# Options: name, unique
+```
+
+Or, create a new CI column:
+
+```ruby
+DbTextSearch::CaseInsensitiveEq.add_ci_text_column connection, :users, :username
+```
+
+Perform a search for records with column that case-insensitively equals to one of the strings in a given set:
+
+```ruby
+DbTextSearch::CaseInsensitiveEq.new(User.confirmed, :username).find(%w(Alice Bob))
+ #=> ActiveRecord::Relation
+```
+
+See also: [API documentation][api-docs].
 
 ## Under the hood
 
@@ -57,3 +79,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/thredd
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
 
+[api-docs]: http://www.rubydoc.info/gems/db_text_search

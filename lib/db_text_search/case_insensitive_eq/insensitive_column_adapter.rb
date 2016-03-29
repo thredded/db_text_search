@@ -1,6 +1,6 @@
-require 'db_text_search/case_insensitive_string_finder/adapter'
+require 'db_text_search/case_insensitive_eq/adapter'
 module DbTextSearch
-  class CaseInsensitiveStringFinder
+  class CaseInsensitiveEq
     class InsensitiveColumnAdapter < Adapter
       # (see Adapter#initialize)
       def initialize(scope, column)

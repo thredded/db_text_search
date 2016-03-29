@@ -12,12 +12,13 @@ before_install:
   if [ "$DB" = 'postgresql' ]; then psql -d template1 -c "CREATE EXTENSION citext;" -U postgres; fi
 after_script:
 # NB: --groups must equal to the total number of jobs
-- bundle exec codeclimate-batch --groups 6
+- bundle exec codeclimate-batch --groups 9
 cache: bundler
 bundler_args: --path ../../vendor/bundle --without debug
 gemfile:
 - spec/gemfiles/rails_4_1.gemfile
 - spec/gemfiles/rails_4_2.gemfile
+- spec/gemfiles/rails_5_0.gemfile
 addons:
   code_climate:
     repo_token:
