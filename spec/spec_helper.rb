@@ -47,6 +47,8 @@ def force_index
       case ActiveRecord::Base.connection.adapter_name
         when /postgresql/i
           ['SET enable_seqscan=off', 'SET enable_seqscan=on']
+        when /mysql/i
+          ['SET max_seeks_for_key=1', 'SET max_seeks_for_key=18446744073709551615']
         else
           nil
       end
