@@ -40,6 +40,22 @@ DbTextSearch::CaseInsensitiveEq.new(User.confirmed, :username).find(%w(Alice Bob
 
 See also: [API documentation][api-docs].
 
+### Full text search
+
+Add an index:
+
+```ruby
+DbTextSearch::FullTextSearch.add_index connection, :posts, :content
+# Options: name
+```
+
+Perform a full-text search:
+
+```ruby
+DbTextSearch::FullTextSearch.new(Post.published, :content).find('peace')
+DbTextSearch::FullTextSearch.new(Post.published, :content).find(%w(love kaori))
+```
+
 ## Under the hood
 
 <table>
@@ -60,6 +76,21 @@ See also: [API documentation][api-docs].
   </tr>
 </tbody>
 </table>
+
+### Full-text search
+
+#### MySQL
+
+A `FULLTEXT` index, and a `MATCH AGAINST` query.
+
+#### PostgreSQL
+
+A `gist(to_tsvector(...))` index, and a `@@ plainto_tsquery` query.
+Methods also accept an optional `pg_ts_config` argument (default: `"'english'"`) that is ignored for other databases.
+
+#### SQLite
+
+**No index**, a `LIKE %term%` query for each term joined with `AND`.
 
 ## Development
 
