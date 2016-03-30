@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module DbTextSearch
@@ -27,7 +29,7 @@ module DbTextSearch
           ensure
             if Name.connection.adapter_name =~ /postgres/i
               # Work around https://github.com/rails/rails/issues/24359
-              Name.connection.exec_query %Q(DROP INDEX #{index_name})
+              Name.connection.exec_query "DROP INDEX #{index_name}"
             else
               ActiveRecord::Migration.remove_index :names, name: index_name
             end
@@ -40,16 +42,14 @@ module DbTextSearch
           mock_connection = Struct.new(:adapter_name).new('MySQL')
           expect {
             CaseInsensitiveEq::LowerAdapter.add_index(mock_connection, :names, :name)
-          }.to raise_error(ArgumentError,
-                           'MySQL case-insensitive index creation for case-sensitive columns is not supported.')
+          }.to raise_error(ArgumentError, 'Unsupported adapter MySQL')
         end
 
         it 'throws an error for an invalid adapter' do
           mock_connection = Struct.new(:adapter_name).new('AnInvalidAdapter')
           expect {
             CaseInsensitiveEq::LowerAdapter.add_index(mock_connection, :names, :name)
-          }.to raise_error(ArgumentError,
-                           'Cannot create a case-insensitive index for case-sensitive column on AnInvalidAdapter.')
+          }.to raise_error(ArgumentError, 'Unsupported adapter AnInvalidAdapter')
         end
       end
     end
@@ -97,11 +97,13 @@ module DbTextSearch
         expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, :ci_name)).to be_falsey
       end
 
-      it 'fails with ArgumentError on an unknown adapter' do
-        mock_connection = double('Connection', adapter_name: 'AnInvalidAdapter', schema_cache: double(columns: []))
-        expect {
-          CaseInsensitiveEq.column_case_sensitive? mock_connection, :names, :a_column
-        }.to raise_error(ArgumentError, 'Unsupported adapter AnInvalidAdapter')
+      it 'fails with ArgumentError on an unknown adapter and sqlite' do
+        %w(SQLite UnknownAdapter).each do |adapter_name|
+          mock_connection = double('Connection', adapter_name: adapter_name, schema_cache: double(columns: []))
+          expect {
+            CaseInsensitiveEq.column_case_sensitive? mock_connection, :names, :a_column
+          }.to raise_error(ArgumentError, "Unsupported adapter #{adapter_name}")
+        end
       end
     end
 
@@ -116,25 +118,27 @@ module DbTextSearch
       ActiveRecord::Schema.define do
         self.verbose = false
         create_table :names do |t|
-          case connection.adapter_name
-            when /mysql/i
-              t.string :ci_name
-              t.column :cs_name, 'VARCHAR(191) COLLATE utf8_bin'
-            when /postgres/i
-              begin
-                connection.enable_extension 'citext'
-              rescue ActiveRecord::StatementInvalid
-                fail "Please run the command below to enable the 'citext' Postgres extension:\n" <<
-                         "#{psql_su_cmd} -d #{ActiveRecord::Base.connection_config[:database]} -c 'CREATE EXTENSION citext;'"
-              end
-              t.column :ci_name, 'CITEXT'
-              t.string :cs_name
-            when /sqlite/i
-              t.column :ci_name, 'VARCHAR(191) COLLATE NOCASE'
-              t.string :cs_name
-            else
-              fail "unknown adapter #{connection.adapter_name}"
-          end
+          DbTextSearch.match_adapter(
+              connection,
+              mysql:    -> {
+                t.string :ci_name
+                t.column :cs_name, 'VARCHAR(191) COLLATE utf8_bin'
+              },
+              postgres: -> {
+                begin
+                  connection.enable_extension 'citext'
+                rescue ActiveRecord::StatementInvalid
+                  raise "Please run the command below to enable the 'citext' Postgres extension:\n" \
+                         "#{psql_su_cmd} -d #{ActiveRecord::Base.connection_config[:database]} " \
+                         "-c 'CREATE EXTENSION citext;'"
+                end
+                t.column :ci_name, 'CITEXT'
+                t.string :cs_name
+              },
+              sqlite:   -> {
+                t.column :ci_name, 'VARCHAR(191) COLLATE NOCASE'
+                t.string :cs_name
+              })
         end
       end
       ActiveRecord::Base.connection.schema_cache.clear!

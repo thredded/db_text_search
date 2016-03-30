@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'db_text_search/full_text_search/abstract_adapter'
 module DbTextSearch
   class FullTextSearch
@@ -17,9 +19,8 @@ module DbTextSearch
         end
       end
 
-      # (see AbstractAdapter.add_index)
-      def self.add_index(connection, table_name, column_name, name:, pg_ts_config:)
-        # A no-op, as we just use LIKE for sqlite.
+      # A no-op, as we just use LIKE for sqlite.
+      def self.add_index(_connection, _table_name, _column_name, name:, pg_ts_config:)
       end
     end
   end

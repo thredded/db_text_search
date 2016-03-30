@@ -1,0 +1,48 @@
+AllCops:
+  TargetRubyVersion: 2.1
+Lint/HandleExceptions:
+  Exclude:
+  - 'spec/spec_helper.rb'
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true
+  Exclude:
+  - 'lib/db_text_search/case_insensitive_eq/abstract_adapter.rb'
+  - 'lib/db_text_search/full_text_search/abstract_adapter.rb'
+Metrics/CyclomaticComplexity:
+  Max: 7
+Metrics/MethodLength:
+  Max: 15
+Metrics/ModuleLength:
+  Max: 130
+  Exclude:
+  - 'spec/**/*.rb'
+Style/AlignParameters:
+  Enabled: false
+Style/BlockDelimiters:
+  Enabled: false
+Style/CaseIndentation:
+  IndentOneStep: true
+Style/IndentHash:
+  IndentationWidth: 4
+Style/SpaceInsideHashLiteralBraces:
+  Enabled: false
+Style/FirstParameterIndentation:
+  IndentationWidth: 4
+Style/Lambda:
+  Enabled: false
+Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
+  IndentationWidth: 4
+Style/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+  IndentationWidth: 4
+Style/MutableConstant:
+  Enabled: false
+Style/SignalException:
+  EnforcedStyle: semantic
+Style/SpaceAroundOperators:
+  Enabled: false
+Style/UnneededPercentQ:
+  Enabled: false
+Metrics/LineLength:
+  Max: 120

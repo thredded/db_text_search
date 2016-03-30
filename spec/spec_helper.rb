@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 if ENV['TRAVIS'] && !(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx')
@@ -44,15 +46,11 @@ case ENV['DB']
 end
 
 def force_index
-  enable_force_index, disable_force_index =
-      case ActiveRecord::Base.connection.adapter_name
-        when /postgresql/i
-          ['SET enable_seqscan=off', 'SET enable_seqscan=on']
-        when /mysql/i
-          ['SET max_seeks_for_key=1', 'SET max_seeks_for_key=18446744073709551615']
-        else
-          nil
-      end
+  enable_force_index, disable_force_index = DbTextSearch.match_adapter(
+      ActiveRecord::Base.connection,
+      postgres: -> { ['SET enable_seqscan=off', 'SET enable_seqscan=on'] },
+      mysql:    -> { ['SET max_seeks_for_key=1', 'SET max_seeks_for_key=18446744073709551615'] },
+      sqlite:   -> {})
   begin
     ActiveRecord::Base.connection.execute(enable_force_index).tap { |r| r && r.clear } if enable_force_index
     yield
@@ -62,20 +60,15 @@ def force_index
 end
 
 def explain_index_expr(index_name)
-  case ActiveRecord::Base.connection.adapter_name
-    when /mysql/i
-      /\b(ref|index|fulltext)\b.*\b#{Regexp.escape index_name}\b/
-    when /sqlite/i
-      /USING (?:COVERING )?INDEX #{Regexp.escape index_name}\b/
-    when /postgres/i
-      "Index Scan using #{index_name}"
-    else
-      fail "unknown adapter #{ActiveRecord::Base.connection.adapter_name}"
-  end
+  DbTextSearch.match_adapter(
+      ActiveRecord::Base.connection,
+      mysql:    -> { /\b(ref|index|fulltext)\b.*\b#{Regexp.escape index_name}\b/ },
+      postgres: -> { "Index Scan using #{index_name}" },
+      sqlite:   -> { /USING (?:COVERING )?INDEX #{Regexp.escape index_name}\b/ })
 end
 
 def psql_su_cmd
-  system(%q{psql postgres -c '' 2>/dev/null}) ? 'psql' : 'sudo -u postgres psql -U postgres'
+  system(%q(psql postgres -c '' 2>/dev/null)) ? 'psql' : 'sudo -u postgres psql -U postgres'
 end
 
 RSpec::Matchers.define :use_index do |index_name|

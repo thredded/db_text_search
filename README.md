@@ -3,7 +3,7 @@
 Different relational databases treat text search very differently.
 DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MySQL, and PostgreSQL to do:
 
-* Case-insensitive string-in-set querying, and CI index creation.
+* Case-insensitive string-in-set querying, and case-insensitive index creation.
 * Basic full-text search for a list of terms, and FTS index creation.
 
 ## Installation
@@ -11,14 +11,14 @@ DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MyS
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'db_text_search', '~> 0.1.1'
+gem 'db_text_search', '~> 0.1.2'
 ```
 
 ## Usage
 
 ### Case-insensitive string matching
 
-Add an index in a migration to an existing CI or CS column:
+Add an index in a migration to an existing CI (case-insensitive) or CS (case-sensitive) column:
 
 ```ruby
 DbTextSearch::CaseInsensitiveEq.add_index connection, :users, :username
@@ -34,6 +34,7 @@ DbTextSearch::CaseInsensitiveEq.add_ci_text_column connection, :users, :username
 Perform a search for records with column that case-insensitively equals to one of the strings in a given set:
 
 ```ruby
+# Find all confirmed users that have either the username Alice or Bob (case-insensitively):
 DbTextSearch::CaseInsensitiveEq.new(User.confirmed, :username).find(%w(Alice Bob))
  #=> ActiveRecord::Relation
 ```
@@ -61,7 +62,7 @@ DbTextSearch::FullTextSearch.new(Post.published, :content).find(%w(love kaori))
 <table>
 <caption>Case-insensitive string matching methods</caption>
 <thead>
-  <tr><th rowspan="2">Column type</th><th colspan="2">SQLite</th><th colspan="2">MySQL</th><th colspan="2">PostgreSQL</th>
+  <tr><th rowspan="2">Column type</th><th colspan="2">SQLite</th><th colspan="2">MySQL</th><th colspan="2">PostgreSQL</th></tr>
   <tr><th>Detected types</th><th>Search / index</th><th>Detected types</th><th>Search / index</th><th>Detected types</th><th>Search / index</th></tr>
 </thead>
 <tbody style="text-align: center">
@@ -69,10 +70,10 @@ DbTextSearch::FullTextSearch.new(Post.published, :content).find(%w(love kaori))
       <td rowspan="2">always treated as CS</td> <td rowspan="2"><code>COLLATE&nbsp;NOCASE</code></td>
       <td><i>default</i></td> <td><i>default</i></td>
       <td><code>CITEXT</code></td> <td><i>default</i></td>
+  </tr>
   <tr><th>CS</th>
     <td>non-<code>ci</code> collations</td> <td><code>LOWER</code><br><b>no index</b></td>
     <td><i>default</i></td> <td><code>LOWER</code></td>
-  </tr>
   </tr>
 </tbody>
 </table>

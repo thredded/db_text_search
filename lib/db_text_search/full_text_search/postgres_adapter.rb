@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'db_text_search/full_text_search/abstract_adapter'
 module DbTextSearch
   class FullTextSearch

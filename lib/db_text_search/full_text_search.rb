@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'db_text_search/full_text_search/postgres_adapter'
 require 'db_text_search/full_text_search/mysql_adapter'
 require 'db_text_search/full_text_search/sqlite_adapter'
@@ -19,7 +21,7 @@ module DbTextSearch
     # @param pg_ts_config [String] for Postgres, the TS config to use; ignored for non-postgres.
     # @return [ActiveRecord::Relation]
     def find(term_or_terms, pg_ts_config: DEFAULT_PG_TS_CONFIG)
-      values  = Array(term_or_terms)
+      values = Array(term_or_terms)
       return @scope.none if values.empty?
       @adapter.find(values, pg_ts_config: pg_ts_config)
     end
@@ -43,16 +45,11 @@ module DbTextSearch
     # @return [Class<AbstractAdapter>]
     # @api private
     def self.adapter_class(connection, _table_name, _column_name)
-      case connection.adapter_name
-        when /mysql/i
-          MysqlAdapter
-        when /postgres/i
-          PostgresAdapter
-        when /sqlite/i
-          SqliteAdapter
-        else
-          fail ArgumentError.new("Unsupported adapter #{connection.adapter_name}")
-      end
+      DbTextSearch.match_adapter(
+          connection,
+          mysql:    -> { MysqlAdapter },
+          postgres: -> { PostgresAdapter },
+          sqlite:   -> { SqliteAdapter })
     end
   end
 end

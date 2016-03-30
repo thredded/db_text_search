@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'db_text_search/query_building'
 module DbTextSearch
   class CaseInsensitiveEq

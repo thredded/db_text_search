@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'db_text_search/case_insensitive_eq/insensitive_column_adapter'
 require 'db_text_search/case_insensitive_eq/lower_adapter'
 require 'db_text_search/case_insensitive_eq/collate_nocase_adapter'
@@ -26,25 +28,20 @@ module DbTextSearch
     # @param column_name [String, Symbol]
     # @param options [Hash] passed to ActiveRecord::ConnectionAdapters::SchemaStatements#add_index
     def self.add_ci_text_column(connection, table_name, column_name, options = {})
-      case connection.adapter_name.downcase
-        when /mysql/
-          connection.add_column(table_name, column_name, :text, options)
-        when /postgres/
-          connection.enable_extension 'citext'
-          if ActiveRecord::VERSION::STRING >= '4.2.0'
-            connection.add_column(table_name, column_name, :citext, options)
-          else
-            connection.add_column(table_name, column_name, 'CITEXT', options)
-          end
-        when /sqlite/
-          if ActiveRecord::VERSION::MAJOR >= 5
-            connection.add_column(table_name, column_name, :text, options.merge(collation: 'NOCASE'))
-          else
-            connection.add_column(table_name, column_name, 'TEXT COLLATE NOCASE', options)
-          end
-        else
-          fail ArgumentError.new("Unsupported adapter #{connection.adapter_name}")
-      end
+      connection.add_column table_name, column_name, *DbTextSearch.match_adapter(
+          connection,
+          mysql:    -> { [:text, options] },
+          postgres: -> {
+            connection.enable_extension 'citext'
+            [(ActiveRecord::VERSION::STRING >= '4.2.0' ? :citext : 'CITEXT'), options]
+          },
+          sqlite:   -> {
+            if ActiveRecord::VERSION::MAJOR >= 5
+              [:text, options.merge(collation: 'NOCASE')]
+            else
+              ['TEXT COLLATE NOCASE', options]
+            end
+          })
     end
 
     # Add an index for case-insensitive string search.
@@ -65,15 +62,16 @@ module DbTextSearch
     # @return [Class<AbstractAdapter>]
     # @api private
     def self.adapter_class(connection, table_name, column_name)
-      if connection.adapter_name.downcase =~ /sqlite/
-        # Always use COLLATE NOCASE for SQLite, as we can't check if the column is case-sensitive.
-        # It has no performance impact apart from slightly longer query strings for case-insensitive columns.
-        CollateNocaseAdapter
-      elsif column_case_sensitive?(connection, table_name, column_name)
-        LowerAdapter
-      else
-        InsensitiveColumnAdapter
-      end
+      lower_or_insensitive = -> {
+        column_case_sensitive?(connection, table_name, column_name) ? LowerAdapter : InsensitiveColumnAdapter
+      }
+      DbTextSearch.match_adapter(
+          connection,
+          mysql:    lower_or_insensitive,
+          postgres: lower_or_insensitive,
+          # Always use COLLATE NOCASE for SQLite, as we can't check if the column is case-sensitive.
+          # It has no performance impact apart from slightly longer query strings for case-insensitive columns.
+          sqlite:   -> { CollateNocaseAdapter })
     end
 
     # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
@@ -84,14 +82,11 @@ module DbTextSearch
     # @api private
     def self.column_case_sensitive?(connection, table_name, column_name)
       column = connection.schema_cache.columns(table_name).detect { |c| c.name == column_name.to_s }
-      case connection.adapter_name.downcase
-        when /mysql/
-          column.case_sensitive?
-        when /postgres/
-          column.sql_type !~ /citext/i
-        else
-          fail ArgumentError.new("Unsupported adapter #{connection.adapter_name}")
-      end
+      DbTextSearch.match_adapter(
+          connection,
+          mysql:    -> { column.case_sensitive? },
+          postgres: -> { column.sql_type !~ /citext/i },
+          sqlite:   -> { DbTextSearch.unsupported_adapter! connection })
     end
   end
 end

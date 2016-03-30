@@ -5,6 +5,7 @@ require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:spec)
 task default: :spec
 
+# Common methods for the test_all_dbs, test_all_gemfiles, and test_all Rake tasks.
 module TestTasks
   module_function
 

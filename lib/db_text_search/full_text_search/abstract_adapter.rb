@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DbTextSearch
   class FullTextSearch
     # A base class for FullTextSearch adapters.

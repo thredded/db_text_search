@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DbTextSearch
   # Common methods for building SQL that use @scope and @column instance variables.
   # @api private
@@ -24,7 +26,7 @@ module DbTextSearch
     end
 
     # @return [String] SQL-quoted string suitable for use in a LIKE statement, with % and _ escaped.
-    def sanitize_sql_like(string, escape_character = "\\")
+    def sanitize_sql_like(string, escape_character = '\\')
       pattern = Regexp.union(escape_character, '%', '_')
       string.gsub(pattern) { |x| [escape_character, x].join }
     end

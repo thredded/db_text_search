@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 module DbTextSearch
   RSpec.describe FullTextSearch do
-    let!(:post_midsummer) { Post.create!(
-        content: 'Love looks not with the eyes, but with the mind; and therefore is winged Cupid painted blind.') }
+    let!(:post_midsummer) { Post.create!(content: 'Love looks not with the eyes, but with the mind;') }
     let!(:post_richard) { Post.create!(content: 'An honest tale speeds best, being plainly told.') }
     let!(:post_well) { Post.create!(content: 'Love all, trust a few, do wrong to none.') }
 
