@@ -2,6 +2,8 @@ require 'db_text_search/query_building'
 module DbTextSearch
   class CaseInsensitiveEq
     # A base class for CaseInsensitiveStringFinder adapters.
+    # @abstract
+    # @api private
     class AbstractAdapter
       include ::DbTextSearch::QueryBuilding
 
@@ -25,7 +27,8 @@ module DbTextSearch
       # @param table_name [String, Symbol]
       # @param column_name [String, Symbol]
       # @param options [Hash] passed down to ActiveRecord::ConnectionAdapters::SchemaStatements#add_index.
-      # @return (see ActiveRecord::ConnectionAdapters::SchemaStatements#add_index)
+      # @option options name [String] index name
+      # @option options unique [Boolean] default: false
       # @abstract
       def self.add_index(connection, table_name, column_name, options = {})
         fail 'abstract'

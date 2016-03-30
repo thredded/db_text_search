@@ -81,7 +81,7 @@ DbTextSearch::FullTextSearch.new(Post.published, :content).find(%w(love kaori))
 
 #### MySQL
 
-A `FULLTEXT` index, and a `MATCH AGAINST` query.
+A `FULLTEXT` index, and a `MATCH AGAINST` query. MySQL v5.6.4+ is required.
 
 #### PostgreSQL
 

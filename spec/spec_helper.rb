@@ -2,9 +2,10 @@ $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 if ENV['TRAVIS'] && !(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx')
   require 'codeclimate_batch'
-  CodeclimateBatch.start do
-    add_filter '/lib/db_text_search/case_insensitive_eq/adapter.rb'
-  end
+  require 'simplecov'
+  ::SimpleCov.add_filter '/lib/db_text_search/case_insensitive_eq/abstract_adapter.rb'
+  ::SimpleCov.add_filter '/lib/db_text_search/full_text_search/abstract_adapter.rb'
+  CodeclimateBatch.start
 end
 require 'db_text_search'
 require 'fileutils'

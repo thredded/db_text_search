@@ -5,14 +5,15 @@ require 'db_text_search/case_insensitive_eq/collate_nocase_adapter'
 module DbTextSearch
   # Provides case-insensitive string-in-set querying, and CI index creation.
   class CaseInsensitiveEq
-    # (see AbstractAdapter)
+    # @param scope [ActiveRecord::Relation, Class<ActiveRecord::Base>]
+    # @param column [Symbol] name
     def initialize(scope, column)
       @adapter = self.class.adapter_class(scope.connection, scope.table_name, column).new(scope, column)
       @scope   = scope
     end
 
     # @param value_or_values [String, Array<String>]
-    # @return (see AbstractAdapter#find)
+    # @return [ActiveRecord::Relation]
     def find(value_or_values)
       values = Array(value_or_values)
       return @scope.none if values.empty?
@@ -23,14 +24,14 @@ module DbTextSearch
     # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
     # @param table_name [String, Symbol]
     # @param column_name [String, Symbol]
-    # @param options [Hash]
+    # @param options [Hash] passed to ActiveRecord::ConnectionAdapters::SchemaStatements#add_index
     def self.add_ci_text_column(connection, table_name, column_name, options = {})
       case connection.adapter_name.downcase
         when /mysql/
           connection.add_column(table_name, column_name, :text, options)
         when /postgres/
           connection.enable_extension 'citext'
-          if ActiveRecord::VERSION::MAJOR >= 4 && ActiveRecord::VERSION::MINOR >= 2
+          if ActiveRecord::VERSION::STRING >= '4.2.0'
             connection.add_column(table_name, column_name, :citext, options)
           else
             connection.add_column(table_name, column_name, 'CITEXT', options)
@@ -42,11 +43,18 @@ module DbTextSearch
             connection.add_column(table_name, column_name, 'TEXT COLLATE NOCASE', options)
           end
         else
-          fail "Unsupported adapter #{connection.adapter_name}"
+          fail ArgumentError.new("Unsupported adapter #{connection.adapter_name}")
       end
     end
 
-    # (see AbstractAdapter.add_index)
+    # Add an index for case-insensitive string search.
+    #
+    # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
+    # @param table_name [String, Symbol]
+    # @param column_name [String, Symbol]
+    # @param options [Hash]
+    # @option options name [String] index name
+    # @option options unique [Boolean] default: false
     def self.add_index(connection, table_name, column_name, options = {})
       adapter_class(connection, table_name, column_name).add_index(connection, table_name, column_name, options)
     end
@@ -55,6 +63,7 @@ module DbTextSearch
     # @param table_name [String, Symbol]
     # @param column_name [String, Symbol]
     # @return [Class<AbstractAdapter>]
+    # @api private
     def self.adapter_class(connection, table_name, column_name)
       if connection.adapter_name.downcase =~ /sqlite/
         # Always use COLLATE NOCASE for SQLite, as we can't check if the column is case-sensitive.
@@ -81,7 +90,7 @@ module DbTextSearch
         when /postgres/
           column.sql_type !~ /citext/i
         else
-          fail "Unsupported adapter #{connection.adapter_name}"
+          fail ArgumentError.new("Unsupported adapter #{connection.adapter_name}")
       end
     end
   end

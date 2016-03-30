@@ -1,6 +1,8 @@
 require 'db_text_search/case_insensitive_eq/abstract_adapter'
 module DbTextSearch
   class CaseInsensitiveEq
+    # Provides case-insensitive string-in-set querying for case-insensitive columns.
+    # @api private
     class InsensitiveColumnAdapter < AbstractAdapter
       # (see AbstractAdapter#find)
       def find(values)

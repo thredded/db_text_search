@@ -1,13 +1,13 @@
 require 'db_text_search/case_insensitive_eq/abstract_adapter'
 module DbTextSearch
   class CaseInsensitiveEq
+    # Provides case-insensitive string-in-set querying by applying the database LOWER function.
+    # @api private
     class LowerAdapter < AbstractAdapter
       # (see AbstractAdapter#find)
       def find(values)
         conn = @scope.connection
-        @scope.where <<-SQL.strip
-          LOWER(#{quoted_scope_column}) IN (#{values.map { |v| "LOWER(#{conn.quote(v.to_s)})" }.join(', ')})
-        SQL
+        @scope.where "LOWER(#{quoted_scope_column}) IN (#{values.map { |v| "LOWER(#{conn.quote(v.to_s)})" }.join(', ')})"
       end
 
       # (see AbstractAdapter.add_index)
@@ -15,21 +15,19 @@ module DbTextSearch
         if connection.adapter_name =~ /postgres/i
           # TODO: Switch to native Rails support once it lands.
           # https://github.com/rails/rails/pull/18499
-          index_name = options[:name] || "#{table_name}_#{column_name}_lower"
-          if defined?(SchemaPlus)
-            connection.add_index(table_name, column_name, options.merge(
-                name: index_name, expression: "LOWER(#{connection.quote_column_name(column_name)})"))
+          options              = options.dup
+          options[:name]       ||= "#{table_name}_#{column_name}_lower"
+          options[:expression] = "(LOWER(#{connection.quote_column_name(column_name)}))"
+          if defined?(::SchemaPlus)
+            connection.add_index(table_name, column_name, options)
           else
-            options.assert_valid_keys(:name, :unique)
-            connection.exec_query <<-SQL.strip
-              CREATE #{'UNIQUE ' if options[:unique]}INDEX #{index_name} ON #{connection.quote_table_name(table_name)}
-                (LOWER(#{connection.quote_column_name(column_name)}));
-            SQL
+            connection.exec_query quoted_create_index(connection, table_name, **options)
           end
         elsif connection.adapter_name =~ /mysql/i
-          fail 'MySQL case-insensitive index creation for case-sensitive columns is not supported.'
+          fail ArgumentError.new('MySQL case-insensitive index creation for case-sensitive columns is not supported.')
         else
-          fail "Cannot create a case-insensitive index for case-sensitive column on #{connection.adapter_name}."
+          fail ArgumentError.new(
+              "Cannot create a case-insensitive index for case-sensitive column on #{connection.adapter_name}.")
         end
       end
     end

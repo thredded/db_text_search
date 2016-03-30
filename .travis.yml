@@ -2,10 +2,14 @@ language: ruby
 rvm:
 - 2.2.4
 env:
-# Username and password from http://docs.travis-ci.com/user/database-setup/
-- DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
-- DB=mysql2     DB_USERNAME=root DB_PASSWORD=""
-- DB=sqlite3
+  matrix:
+  # Username and password from http://docs.travis-ci.com/user/database-setup/
+  - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
+  - DB=mysql2     DB_USERNAME=root DB_PASSWORD=""
+  - DB=sqlite3
+  global:
+  # CODECLIMATE_REPO_TOKEN
+  - secure: "NbbrE0I7sD2HHzs1KPOuSdJNlxtmDAwCVvJlMtm3oIlPaHqqPV+wZEsjVrnpohyvkLi/QEmsFjPG5CnSntXs9e0s5dWz5vvqmaxqsufKb7uFRALBAaQ8s6x6SMAORDgpQtWS7HnIpNhjmpy4cqFxfbyOrfVFp7+G6huF5VPwTDfDjEgQZrMOs1XEGWfv+F3XQeCR55pnAR48/luqOPOZoQBfq2WGZj4oC50F+R4FCieRQsXW7PQO5F9NhdfSMoltaf77hzdNdhDbSaW/FszUS/MzuyGX/2phW4rXppNo41K7uS+Nhvglfs/x6siYFa/nC3YfFhUTJLzlo4CwQHi5AFK6BYid0QSpAIecmPzJdIqt4XF4lu5xtYM7IWIV2xCaoIwr47RkG9JdIoqpP5AvlYmscU1or2APSpK4y6mpK54s6iQaXYj1YOGazINMOZDknN2TRKDau9ye52X+dK6vqTwv9z+w+0LHL2fJH+CF6Ro2GL+R01dEbXfqfYDXCU4rzxDCNwqk+yj4mvJRMhY/ONUBJow84egtdXQBjhnQk1IW/J+WYbvtRHPOGR3edM1iln/61h+2KoCa/aoPHIeu6TQrKZvRbhpUYeQTjfyPFU2L7loQY1PEQz5tKxMnEwLUX3U2CkxJGDAayeIGEfkxfKo23ZRFpiOwmPQvgAXEtC8="
 before_install:
 - "gem install bundler --no-document"
 - >-
@@ -19,10 +23,6 @@ gemfile:
 - spec/gemfiles/rails_4_1.gemfile
 - spec/gemfiles/rails_4_2.gemfile
 - spec/gemfiles/rails_5_0.gemfile
-addons:
-  code_climate:
-    repo_token:
-      secure: "dQq/IuEG3hmvRwWU6Plc5Fy39JpY0n1//sk4J4c2GWrR4U3ug4NgLy3UPs0SxDGv7YZiaZpqS11iKxU3B3D82WqtuJRv1n6JZZEAOOSAZpgalmzKQWJc/EcZyYSPhXxV1lRQjmoBIP2hefpRV4cilILgcO0iO8I888a/xQKHGm6c2u1TGu5asC0RVHxxlc4cJg9bgreVubUqjUbg2q9s2JuoWc0K5JlsccxUdkD0yN1l8xPW9GoS9f+EufV0Qo6ojghyTCk09c+0Srvbii9FmoLws6rEassk7MWU+q7+2zE3aRGZACi3BzvW9qDYU5fJ/11xquu0QzMEJLwv6hHxF3gHvXAFvHUksi5JNiG9A6HudAe/B4UIk0bd0Bh4ybdIm4nsw2M8qDurcqmFc1zI4yJrY2symcjWOfSILJ69w/R2R80rq8oHMyqzrhAOg6xb7ejyq6Mu7Et/R+eo2WFdCOJdOF5NdDYhSAcNlH1Q44doWDhTFgoztyPeUT/EqNy4pHHWULdgLFVsxR1cSCT7CEC0P8zpSFcFE7Ipu6sn8dMnBCqcnDesID9iEPGjLE4TS8DeXobr9hkZ6UJM6OXBkxO7mimXblCtRoxDBsU9iu5Q0eY6r3tRmG1I0RZmhE6t4+GGirsxuB7S0SRH4Sz8myEU4uaPXWOEAfPvTAi1Aow="
 
 # TODO: remove this once travis gets on with times and upgrades MySQL to 5.6.4+
 dist: trusty

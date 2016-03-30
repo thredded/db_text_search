@@ -34,6 +34,24 @@ module DbTextSearch
           end
         end
       end
+
+      describe CaseInsensitiveEq::LowerAdapter do
+        it 'throws an error for MySQL case-insensitive index for case-sensitive column' do
+          mock_connection = Struct.new(:adapter_name).new('MySQL')
+          expect {
+            CaseInsensitiveEq::LowerAdapter.add_index(mock_connection, :names, :name)
+          }.to raise_error(ArgumentError,
+                           'MySQL case-insensitive index creation for case-sensitive columns is not supported.')
+        end
+
+        it 'throws an error for an invalid adapter' do
+          mock_connection = Struct.new(:adapter_name).new('AnInvalidAdapter')
+          expect {
+            CaseInsensitiveEq::LowerAdapter.add_index(mock_connection, :names, :name)
+          }.to raise_error(ArgumentError,
+                           'Cannot create a case-insensitive index for case-sensitive column on AnInvalidAdapter.')
+        end
+      end
     end
 
     describe '.add_ci_text_column' do
@@ -60,12 +78,31 @@ module DbTextSearch
           expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, column)).to be_falsey
         end
       end
+      it 'fails with ArgumentError on an unknown adapter' do
+        mock_connection = Struct.new(:adapter_name).new('AnInvalidAdapter')
+        expect {
+          CaseInsensitiveEq.add_ci_text_column mock_connection, :names, column
+        }.to raise_error(ArgumentError, 'Unsupported adapter AnInvalidAdapter')
+      end
     end
 
-    it '.column_case_sensitive?' do
-      skip 'not implemented' if Name.connection.adapter_name =~ /sqlite/i
-      expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, :cs_name)).to be_truthy
-      expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, :ci_name)).to be_falsey
+    describe '.column_case_sensitive?' do
+      it 'is truthy for a case-sensitive column' do
+        skip 'not implemented for SQLite' if Name.connection.adapter_name =~ /sqlite/i
+        expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, :cs_name)).to be_truthy
+      end
+
+      it 'is falsey for a case-insensitive column' do
+        skip 'not implemented for SQLite' if Name.connection.adapter_name =~ /sqlite/i
+        expect(CaseInsensitiveEq.column_case_sensitive?(Name.connection, :names, :ci_name)).to be_falsey
+      end
+
+      it 'fails with ArgumentError on an unknown adapter' do
+        mock_connection = double('Connection', adapter_name: 'AnInvalidAdapter', schema_cache: double(columns: []))
+        expect {
+          CaseInsensitiveEq.column_case_sensitive? mock_connection, :names, :a_column
+        }.to raise_error(ArgumentError, 'Unsupported adapter AnInvalidAdapter')
+      end
     end
 
     class Name < ActiveRecord::Base

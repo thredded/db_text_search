@@ -21,8 +21,14 @@ module DbTextSearch
       end
     end
 
-    #describe '.add_index' do
-    #end
+    describe '.add_index' do
+      it 'fails with ArgumentError on an unknown adapter' do
+        mock_connection = Struct.new(:adapter_name).new('AnInvalidAdapter')
+        expect {
+          FullTextSearch.add_index mock_connection, :posts, :content
+        }.to raise_error(ArgumentError, 'Unsupported adapter AnInvalidAdapter')
+      end
+    end
 
     class Post < ActiveRecord::Base
     end

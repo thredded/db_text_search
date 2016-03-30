@@ -3,31 +3,45 @@ require 'db_text_search/full_text_search/mysql_adapter'
 require 'db_text_search/full_text_search/sqlite_adapter'
 
 module DbTextSearch
-  # Provides case-insensitive string-in-set querying, and CI index creation.
+  # Provides basic full-text search for a list of terms, and FTS index creation.
   class FullTextSearch
-    # (see AbstractAdapter)
+    # The default Postgres text search config.
+    DEFAULT_PG_TS_CONFIG = %q('english')
+
+    # @param scope [ActiveRecord::Relation, Class<ActiveRecord::Base>]
+    # @param column [Symbol] name
     def initialize(scope, column)
       @adapter = self.class.adapter_class(scope.connection, scope.table_name, column).new(scope, column)
       @scope   = scope
     end
 
     # @param term_or_terms [String, Array<String>]
-    # @return (see AbstractAdapter#find)
-    def find(term_or_terms)
-      values = Array(term_or_terms)
+    # @param pg_ts_config [String] for Postgres, the TS config to use; ignored for non-postgres.
+    # @return [ActiveRecord::Relation]
+    def find(term_or_terms, pg_ts_config: DEFAULT_PG_TS_CONFIG)
+      values  = Array(term_or_terms)
       return @scope.none if values.empty?
-      @adapter.find(values)
+      @adapter.find(values, pg_ts_config: pg_ts_config)
     end
 
-    # (see AbstractAdapter.add_index)
-    def self.add_index(connection, table_name, column_name, options = {})
-      adapter_class(connection, table_name, column_name).add_index(connection, table_name, column_name, options)
+    # Add an index for full text search.
+    #
+    # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
+    # @param table_name [String, Symbol]
+    # @param column_name [String, Symbol]
+    # @param name [String, Symbol] index name
+    # @param pg_ts_config [String] for Postgres, the TS config to use; ignored for non-postgres.
+    def self.add_index(connection, table_name, column_name, name: "#{table_name}_#{column_name}_fts",
+        pg_ts_config: DEFAULT_PG_TS_CONFIG)
+      adapter_class(connection, table_name, column_name)
+          .add_index(connection, table_name, column_name, name: name, pg_ts_config: pg_ts_config)
     end
 
     # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
     # @param _table_name [String, Symbol]
     # @param _column_name [String, Symbol]
     # @return [Class<AbstractAdapter>]
+    # @api private
     def self.adapter_class(connection, _table_name, _column_name)
       case connection.adapter_name
         when /mysql/i
@@ -37,7 +51,7 @@ module DbTextSearch
         when /sqlite/i
           SqliteAdapter
         else
-          fail "unknown adapter #{connection.adapter_name}"
+          fail ArgumentError.new("Unsupported adapter #{connection.adapter_name}")
       end
     end
   end
