@@ -8,6 +8,12 @@ module DbTextSearch
       base.extend ClassMethods
     end
 
+    # @return [String] SQL-quoted string suitable for use in a LIKE statement, with % and _ escaped.
+    def sanitize_sql_like(string, escape_character = '\\')
+      pattern = Regexp.union(escape_character, '%', '_')
+      string.gsub(pattern) { |x| [escape_character, x].join }
+    end
+
     protected
 
     # @return [String] SQL-quoted scope table name.
@@ -23,12 +29,6 @@ module DbTextSearch
     # @return [String] SQL-quoted column fully-qualified with the scope table name.
     def quoted_scope_column
       "#{quoted_scope_table}.#{quoted_column}"
-    end
-
-    # @return [String] SQL-quoted string suitable for use in a LIKE statement, with % and _ escaped.
-    def sanitize_sql_like(string, escape_character = '\\')
-      pattern = Regexp.union(escape_character, '%', '_')
-      string.gsub(pattern) { |x| [escape_character, x].join }
     end
 
     # Common methods for building SQL

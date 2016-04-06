@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'db_text_search/case_insensitive_eq/abstract_adapter'
+require 'db_text_search/case_insensitive/abstract_adapter'
 module DbTextSearch
-  class CaseInsensitiveEq
+  class CaseInsensitive
     # Provides case-insensitive string-in-set querying by applying the database LOWER function.
     # @api private
     class LowerAdapter < AbstractAdapter
@@ -10,6 +10,11 @@ module DbTextSearch
       def find(values)
         conn = @scope.connection
         @scope.where "LOWER(#{quoted_scope_column}) IN (#{values.map { |v| "LOWER(#{conn.quote(v)})" }.join(', ')})"
+      end
+
+      # (see AbstractAdapter#like)
+      def like(query)
+        @scope.where "LOWER(#{quoted_scope_column}) LIKE LOWER(?)", query
       end
 
       # (see AbstractAdapter.add_index)
@@ -22,7 +27,7 @@ module DbTextSearch
             postgres: -> {
               options              = options.dup
               options[:name]       ||= "#{table_name}_#{column_name}_lower"
-              options[:expression] = "(LOWER(#{connection.quote_column_name(column_name)}))"
+              options[:expression] = "(LOWER(#{connection.quote_column_name(column_name)}) text_pattern_ops)"
               if defined?(::SchemaPlus)
                 connection.add_index(table_name, column_name, options)
               else

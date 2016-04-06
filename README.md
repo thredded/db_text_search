@@ -21,22 +21,31 @@ gem 'db_text_search', '~> 0.1.2'
 Add an index in a migration to an existing CI (case-insensitive) or CS (case-sensitive) column:
 
 ```ruby
-DbTextSearch::CaseInsensitiveEq.add_index connection, :users, :username
+DbTextSearch::CaseInsensitive.add_index connection, :users, :username
 # Options: name, unique
 ```
 
 Or, create a new CI column:
 
 ```ruby
-DbTextSearch::CaseInsensitiveEq.add_ci_text_column connection, :users, :username
+DbTextSearch::CaseInsensitive.add_ci_text_column connection, :users, :username
 ```
 
 Perform a search for records with column that case-insensitively equals to one of the strings in a given set:
 
 ```ruby
 # Find all confirmed users that have either the username Alice or Bob (case-insensitively):
-DbTextSearch::CaseInsensitiveEq.new(User.confirmed, :username).find(%w(Alice Bob))
+DbTextSearch::CaseInsensitive.new(User.confirmed, :username).find(%w(Alice Bob))
  #=> ActiveRecord::Relation
+```
+
+Perform a case-insensitive LIKE search:
+ 
+```ruby
+search = DbTextSearch::CaseInsensitive.new(User.confirmed, :username)
+search.like('jo%')
+# Or, to escape user input:
+search.like("#{search.sanitize_sql_like(query)}%")
 ```
 
 See also: [API documentation][api-docs].

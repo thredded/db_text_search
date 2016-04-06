@@ -5,7 +5,7 @@ ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 if ENV['TRAVIS'] && !(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx')
   require 'codeclimate_batch'
   require 'simplecov'
-  ::SimpleCov.add_filter '/lib/db_text_search/case_insensitive_eq/abstract_adapter.rb'
+  ::SimpleCov.add_filter '/lib/db_text_search/case_insensitive/abstract_adapter.rb'
   ::SimpleCov.add_filter '/lib/db_text_search/full_text_search/abstract_adapter.rb'
   CodeclimateBatch.start
 end
@@ -62,7 +62,7 @@ end
 def explain_index_expr(index_name)
   DbTextSearch.match_adapter(
       ActiveRecord::Base.connection,
-      mysql:    -> { /\b(ref|index|fulltext)\b.*\b#{Regexp.escape index_name}\b/ },
+      mysql:    -> { /\b(ref|index|range|fulltext)\b.*\b#{Regexp.escape index_name}\b/ },
       postgres: -> { "Index Scan using #{index_name}" },
       sqlite:   -> { /USING (?:COVERING )?INDEX #{Regexp.escape index_name}\b/ })
 end

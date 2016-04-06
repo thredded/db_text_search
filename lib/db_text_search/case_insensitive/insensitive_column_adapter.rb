@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
-require 'db_text_search/case_insensitive_eq/abstract_adapter'
+require 'db_text_search/case_insensitive/abstract_adapter'
 module DbTextSearch
-  class CaseInsensitiveEq
+  class CaseInsensitive
     # Provides case-insensitive string-in-set querying for case-insensitive columns.
     # @api private
     class InsensitiveColumnAdapter < AbstractAdapter
       # (see AbstractAdapter#find)
       def find(values)
         @scope.where(@column => values)
+      end
+
+      # (see AbstractAdapter#like)
+      def like(query)
+        @scope.where "#{quoted_scope_column} LIKE ?", query
       end
 
       # (see AbstractAdapter.add_index)

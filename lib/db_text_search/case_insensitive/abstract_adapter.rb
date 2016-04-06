@@ -2,7 +2,7 @@
 
 require 'db_text_search/query_building'
 module DbTextSearch
-  class CaseInsensitiveEq
+  class CaseInsensitive
     # A base class for CaseInsensitiveStringFinder adapters.
     # @abstract
     # @api private
@@ -20,6 +20,13 @@ module DbTextSearch
       # @return [ActiveRecord::Relation]
       # @abstract
       def find(values)
+        fail 'abstract'
+      end
+
+      # @param query [String]
+      # @return [ActiveRecord::Relation]
+      # @abstract
+      def like(query)
         fail 'abstract'
       end
 

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'db_text_search/case_insensitive_eq/insensitive_column_adapter'
-require 'db_text_search/case_insensitive_eq/lower_adapter'
-require 'db_text_search/case_insensitive_eq/collate_nocase_adapter'
+require 'db_text_search/case_insensitive/insensitive_column_adapter'
+require 'db_text_search/case_insensitive/lower_adapter'
+require 'db_text_search/case_insensitive/collate_nocase_adapter'
 
 module DbTextSearch
-  # Provides case-insensitive string-in-set querying, and CI index creation.
-  class CaseInsensitiveEq
+  # Provides case-insensitive string-in-set querying, LIKE querying, and CI index creation.
+  class CaseInsensitive
     # @param scope [ActiveRecord::Relation, Class<ActiveRecord::Base>]
     # @param column [Symbol] name
     def initialize(scope, column)
@@ -20,6 +20,18 @@ module DbTextSearch
       values = Array(value_or_values)
       return @scope.none if values.empty?
       @adapter.find(values)
+    end
+
+    # @param query [String]
+    # @return [ActiveRecord::Relation]
+    def like(query)
+      return @scope.none if query.empty?
+      @adapter.like(query)
+    end
+
+    # @return [String] SQL-quoted string suitable for use in a LIKE statement, with % and _ escaped.
+    def sanitize_sql_like(string, escape_character = '\\')
+      @adapter.sanitize_sql_like(string, escape_character)
     end
 
     # Adds a case-insensitive column to the given table.
