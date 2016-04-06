@@ -68,8 +68,10 @@ DbTextSearch::FullText.new(Post.published, :content).find(%w(love kaori))
 
 ## Under the hood
 
+### Case-insensitive string matching
+
 <table>
-<caption>Case-insensitive string matching methods</caption>
+<caption>Case-insensitive equality methods</caption>
 <thead>
   <tr><th rowspan="2">Column type</th><th colspan="2">SQLite</th><th colspan="2">MySQL</th><th colspan="2">PostgreSQL</th></tr>
   <tr><th>Detected types</th><th>Search / index</th><th>Detected types</th><th>Search / index</th><th>Detected types</th><th>Search / index</th></tr>
@@ -86,6 +88,28 @@ DbTextSearch::FullText.new(Post.published, :content).find(%w(love kaori))
   </tr>
 </tbody>
 </table>
+
+<table>
+<caption>Case-insensitive LIKE (only prefix queries can be indexed)</caption>
+<thead>
+  <tr><th>Column type</th><th>SQLite</th><th>MySQL</th><th>PostgreSQL</th></tr>  
+</thead>
+<tbody style="text-align: center">
+  <tr><th>CI</th>
+      <td rowspan="2">
+        <i>default</i>, <a href="https://www.sqlite.org/optoverview.html#like_opt"><b>cannot always use an index</b></a>,<br>
+        even for prefix queries
+      </td>
+      <td><i>default</i></td>
+      <td><b>cannot use an index</b></td>
+  </tr>
+  <tr><th>CS</th>
+    <td><b>cannot use an index</b></td>    
+    <td><code>LOWER(column text_pattern_ops)</code></td>
+  </tr>
+</tbody>
+</table>
+
 
 ### Full-text search
 
