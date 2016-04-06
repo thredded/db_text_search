@@ -3,7 +3,7 @@
 Different relational databases treat text search very differently.
 DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MySQL, and PostgreSQL to do:
 
-* Case-insensitive string-in-set querying, and case-insensitive index creation.
+* Case-insensitive string-in-set querying, prefix querying, and case-insensitive index creation.
 * Basic full-text search for a list of terms, and FTS index creation.
 
 ## Installation
@@ -39,13 +39,10 @@ DbTextSearch::CaseInsensitive.new(User.confirmed, :username).in(%w(Alice Bob))
  #=> ActiveRecord::Relation
 ```
 
-Perform a case-insensitive LIKE search:
+Perform a case-insensitive prefix search:
  
 ```ruby
-search = DbTextSearch::CaseInsensitive.new(User.confirmed, :username)
-search.like('jo%')
-# Or, to escape user input:
-search.like("#{search.sanitize_sql_like(query)}%")
+DbTextSearch::CaseInsensitive.new(User.confirmed, :username).prefix('Jo')
 ```
 
 See also: [API documentation][api-docs].
@@ -90,14 +87,14 @@ DbTextSearch::FullText.new(Post.published, :content).search(%w(love kaori))
 </table>
 
 <table>
-<caption>Case-insensitive LIKE (only prefix queries can be indexed)</caption>
+<caption>Case-insensitive prefix matching (using <code>LIKE</code>)</caption>
 <thead>
   <tr><th>Column type</th><th>SQLite</th><th>MySQL</th><th>PostgreSQL</th></tr>  
 </thead>
 <tbody style="text-align: center">
   <tr><th>CI</th>
       <td rowspan="2">
-        <i>default</i>, <a href="https://www.sqlite.org/optoverview.html#like_opt"><b>cannot always use an index</b></a>,<br>
+        <i>default</i>, <a href="https://www.sqlite.org/optoverview.html#prefix_opt"><b>cannot always use an index</b></a>,<br>
         even for prefix queries
       </td>
       <td><i>default</i></td>

@@ -15,13 +15,13 @@ module DbTextSearch
       end
     end
 
-    describe '#like(query)' do
+    describe '#prefix(query)' do
       let!(:records) { %w(Joe john jack jill x%zz).map { |name| Name.create!(ci_name: name, cs_name: name) } }
       column_cases.each do |(column_desc, column)|
         it "works with a #{column_desc} column" do
           finder = CaseInsensitive.new(Name, column)
-          expect(finder.like('Jo%').to_a).to eq records.first(2)
-          expect(finder.like(finder.sanitize_sql_like('x%Z') + '%').to_a).to eq [records.last]
+          expect(finder.prefix('Jo').to_a).to eq records.first(2)
+          expect(finder.prefix('x%Z').to_a).to eq [records.last]
         end
       end
     end
@@ -54,11 +54,11 @@ module DbTextSearch
           it 'uses an index for #find' do
             force_index { expect(CaseInsensitive.new(Name, column).in('aBc')).to use_index(index_name) }
           end
-          it 'uses an index for #like' do
+          it 'uses an index for #prefix' do
             if Name.connection.adapter_name =~ /postgres/i && column == :ci_name
               skip 'PostgreSQL does not use a LIKE index on citext columns'
             end
-            force_index { expect(CaseInsensitive.new(Name, column).like('A%')).to use_index(index_name) }
+            force_index { expect(CaseInsensitive.new(Name, column).prefix('A')).to use_index(index_name) }
           end
         end
       end

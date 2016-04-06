@@ -12,9 +12,9 @@ module DbTextSearch
         @scope.where "LOWER(#{quoted_scope_column}) IN (#{values.map { |v| "LOWER(#{conn.quote(v)})" }.join(', ')})"
       end
 
-      # (see AbstractAdapter#like)
-      def like(query)
-        @scope.where "LOWER(#{quoted_scope_column}) LIKE LOWER(?)", query
+      # (see AbstractAdapter#prefix)
+      def prefix(query)
+        @scope.where "LOWER(#{quoted_scope_column}) LIKE LOWER(?)", "#{sanitize_sql_like(query)}%"
       end
 
       # (see AbstractAdapter.add_index)

@@ -12,12 +12,14 @@ module DbTextSearch
         @scope.where "#{quoted_scope_column} COLLATE NOCASE IN (#{values.map { |v| conn.quote(v.to_s) }.join(', ')})"
       end
 
-      # (see AbstractAdapter#like)
-      def like(query)
-        escape = '\\'
-        # assuming case_sensitive_like mode to be disabled, like it is by default.
+      # (see AbstractAdapter#prefix)
+      def prefix(query)
+        escape        = '\\'
+        escaped_query = "#{sanitize_sql_like(query, escape)}%"
+        # assuming case_sensitive_prefix mode to be disabled, prefix it is by default.
         # this is to avoid adding COLLATE NOCASE here, which prevents index use in SQLite LIKE.
-        @scope.where "#{quoted_scope_column} LIKE ?#{" ESCAPE '#{escape}'" if query.include?(escape)}", query
+        @scope.where "#{quoted_scope_column} LIKE ?#{" ESCAPE '#{escape}'" if escaped_query.include?(escape)}",
+                     escaped_query
       end
 
       # (see AbstractAdapter.add_index)

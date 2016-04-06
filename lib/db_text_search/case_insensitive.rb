@@ -23,15 +23,10 @@ module DbTextSearch
     end
 
     # @param query [String]
-    # @return [ActiveRecord::Relation]
-    def like(query)
+    # @return [ActiveRecord::Relation] the scope of records with matching prefix.
+    def prefix(query)
       return @scope.none if query.empty?
-      @adapter.like(query)
-    end
-
-    # @return [String] SQL-quoted string suitable for use in a LIKE statement, with % and _ escaped.
-    def sanitize_sql_like(string, escape_character = '\\')
-      @adapter.sanitize_sql_like(string, escape_character)
+      @adapter.prefix(query)
     end
 
     # Adds a case-insensitive column to the given table.

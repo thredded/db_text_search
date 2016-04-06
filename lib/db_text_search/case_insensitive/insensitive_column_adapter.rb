@@ -11,9 +11,9 @@ module DbTextSearch
         @scope.where(@column => values)
       end
 
-      # (see AbstractAdapter#like)
-      def like(query)
-        @scope.where "#{quoted_scope_column} LIKE ?", query
+      # (see AbstractAdapter#prefix)
+      def prefix(query)
+        @scope.where "#{quoted_scope_column} LIKE ?", "#{sanitize_sql_like(query)}%"
       end
 
       # (see AbstractAdapter.add_index)

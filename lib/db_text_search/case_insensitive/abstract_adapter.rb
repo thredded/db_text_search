@@ -26,7 +26,7 @@ module DbTextSearch
       # @param query [String]
       # @return [ActiveRecord::Relation]
       # @abstract
-      def like(query)
+      def prefix(query)
         fail 'abstract'
       end
 
