@@ -11,7 +11,7 @@ Lint/UnusedMethodArgument:
 Metrics/CyclomaticComplexity:
   Max: 7
 Metrics/MethodLength:
-  Max: 15
+  Max: 16
 Metrics/ModuleLength:
   Max: 130
   Exclude:

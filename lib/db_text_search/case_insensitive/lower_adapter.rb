@@ -27,13 +27,8 @@ module DbTextSearch
             postgres: -> {
               options              = options.dup
               options[:name]       ||= "#{table_name}_#{column_name}_lower"
-              options[:expression] = "LOWER(#{connection.quote_column_name(column_name)}) text_pattern_ops"
-              if defined?(::SchemaPlus)
-                connection.add_index(table_name, column_name, options)
-              else
-                options[:expression] = "(#{options[:expression]})"
-                connection.exec_query quoted_create_index(connection, table_name, **options)
-              end
+              options[:expression] = "(LOWER(#{connection.quote_column_name(column_name)}) text_pattern_ops)"
+              connection.exec_query(quoted_create_index(connection, table_name, **options))
             },
             mysql:    unsupported,
             sqlite:   unsupported)
