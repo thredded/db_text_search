@@ -19,7 +19,7 @@ module DbTextSearch
       # @param pg_ts_config [String] a pg text search config
       # @return [ActiveRecord::Relation]
       # @abstract
-      def find(terms, pg_ts_config:)
+      def search(terms, pg_ts_config:)
         fail 'abstract'
       end
 

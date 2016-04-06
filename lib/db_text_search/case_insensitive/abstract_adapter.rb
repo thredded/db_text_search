@@ -19,7 +19,7 @@ module DbTextSearch
       # @param values [Array<String>]
       # @return [ActiveRecord::Relation]
       # @abstract
-      def find(values)
+      def in(values)
         fail 'abstract'
       end
 

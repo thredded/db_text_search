@@ -10,8 +10,8 @@ module DbTextSearch
     # @note MySQL v5.6.4+ is required.
     # @api private
     class MysqlAdapter < AbstractAdapter
-      # (see AbstractAdapter#find)
-      def find(terms, pg_ts_config:)
+      # (see AbstractAdapter#search)
+      def search(terms, pg_ts_config:)
         @scope.where("MATCH (#{quoted_scope_column}) AGAINST (?)", terms.uniq.join(' '))
       end
 

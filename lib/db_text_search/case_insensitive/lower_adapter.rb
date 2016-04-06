@@ -6,8 +6,8 @@ module DbTextSearch
     # Provides case-insensitive string-in-set querying by applying the database LOWER function.
     # @api private
     class LowerAdapter < AbstractAdapter
-      # (see AbstractAdapter#find)
-      def find(values)
+      # (see AbstractAdapter#in)
+      def in(values)
         conn = @scope.connection
         @scope.where "LOWER(#{quoted_scope_column}) IN (#{values.map { |v| "LOWER(#{conn.quote(v)})" }.join(', ')})"
       end

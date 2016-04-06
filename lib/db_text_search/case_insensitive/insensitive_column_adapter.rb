@@ -6,8 +6,8 @@ module DbTextSearch
     # Provides case-insensitive string-in-set querying for case-insensitive columns.
     # @api private
     class InsensitiveColumnAdapter < AbstractAdapter
-      # (see AbstractAdapter#find)
-      def find(values)
+      # (see AbstractAdapter#in)
+      def in(values)
         @scope.where(@column => values)
       end
 

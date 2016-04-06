@@ -16,10 +16,10 @@ module DbTextSearch
 
     # @param value_or_values [String, Array<String>]
     # @return [ActiveRecord::Relation]
-    def find(value_or_values)
+    def in(value_or_values)
       values = Array(value_or_values)
       return @scope.none if values.empty?
-      @adapter.find(values)
+      @adapter.in(values)
     end
 
     # @param query [String]

@@ -10,8 +10,8 @@ module DbTextSearch
     # @see DbTextSearch::FullText::DEFAULT_PG_TS_CONFIG
     # @api private
     class PostgresAdapter < AbstractAdapter
-      # (see AbstractAdapter#find)
-      def find(terms, pg_ts_config:)
+      # (see AbstractAdapter#search)
+      def search(terms, pg_ts_config:)
         @scope.where("to_tsvector(#{pg_ts_config}, #{quoted_scope_column}) @@ plainto_tsquery(#{pg_ts_config}, ?)",
                      terms.uniq.join(' '))
       end

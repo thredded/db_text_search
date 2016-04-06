@@ -10,7 +10,7 @@ module DbTextSearch
       column_cases.each do |(column_desc, column)|
         it "works with a #{column_desc} column" do
           finder = CaseInsensitive.new(Name, column)
-          expect(finder.find('aBc').to_a).to eq records
+          expect(finder.in('aBc').to_a).to eq records
         end
       end
     end
@@ -31,7 +31,7 @@ module DbTextSearch
         index_name = :an_index
 
         it 'does not use an index when there is none (sanity check)' do
-          force_index { expect(CaseInsensitive.new(Name, column).find('aBc')).to_not use_index(index_name) }
+          force_index { expect(CaseInsensitive.new(Name, column).in('aBc')).to_not use_index(index_name) }
         end
 
         describe "adds a usable index on a #{column_desc} column" do
@@ -52,7 +52,7 @@ module DbTextSearch
           end
 
           it 'uses an index for #find' do
-            force_index { expect(CaseInsensitive.new(Name, column).find('aBc')).to use_index(index_name) }
+            force_index { expect(CaseInsensitive.new(Name, column).in('aBc')).to use_index(index_name) }
           end
           it 'uses an index for #like' do
             if Name.connection.adapter_name =~ /postgres/i && column == :ci_name
@@ -98,8 +98,8 @@ module DbTextSearch
           ActiveRecord::Migration.add_index :names, column, name: :"#{column}_index"
           finder = CaseInsensitive.new(Name, column)
           record = Name.create!(ci_name: 'Abc', cs_name: 'Abc', column => 'Abc')
-          expect(finder.find('aBc')).to use_index(:"#{column}_index")
-          expect(finder.find('aBc').first).to eq record
+          expect(finder.in('aBc')).to use_index(:"#{column}_index")
+          expect(finder.in('aBc').first).to eq record
         else
           expect(CaseInsensitive.column_case_sensitive?(Name.connection, :names, column)).to be_falsey
         end

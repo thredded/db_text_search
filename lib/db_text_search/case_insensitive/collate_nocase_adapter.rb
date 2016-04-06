@@ -6,8 +6,8 @@ module DbTextSearch
     # Provides case-insensitive string-in-set querying via COLLATE NOCASE.
     # @api private
     class CollateNocaseAdapter < AbstractAdapter
-      # (see AbstractAdapter#find)
-      def find(values)
+      # (see AbstractAdapter#in)
+      def in(values)
         conn = @scope.connection
         @scope.where "#{quoted_scope_column} COLLATE NOCASE IN (#{values.map { |v| conn.quote(v.to_s) }.join(', ')})"
       end

@@ -20,10 +20,10 @@ module DbTextSearch
     # @param term_or_terms [String, Array<String>]
     # @param pg_ts_config [String] for Postgres, the TS config to use; ignored for non-postgres.
     # @return [ActiveRecord::Relation]
-    def find(term_or_terms, pg_ts_config: DEFAULT_PG_TS_CONFIG)
+    def search(term_or_terms, pg_ts_config: DEFAULT_PG_TS_CONFIG)
       values = Array(term_or_terms)
       return @scope.none if values.empty?
-      @adapter.find(values, pg_ts_config: pg_ts_config)
+      @adapter.search(values, pg_ts_config: pg_ts_config)
     end
 
     # Add an index for full text search.

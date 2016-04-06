@@ -35,7 +35,7 @@ Perform a search for records with column that case-insensitively equals to one o
 
 ```ruby
 # Find all confirmed users that have either the username Alice or Bob (case-insensitively):
-DbTextSearch::CaseInsensitive.new(User.confirmed, :username).find(%w(Alice Bob))
+DbTextSearch::CaseInsensitive.new(User.confirmed, :username).in(%w(Alice Bob))
  #=> ActiveRecord::Relation
 ```
 
@@ -62,8 +62,8 @@ DbTextSearch::FullText.add_index connection, :posts, :content
 Perform a full-text search:
 
 ```ruby
-DbTextSearch::FullText.new(Post.published, :content).find('peace')
-DbTextSearch::FullText.new(Post.published, :content).find(%w(love kaori))
+DbTextSearch::FullText.new(Post.published, :content).search('peace')
+DbTextSearch::FullText.new(Post.published, :content).search(%w(love kaori))
 ```
 
 ## Under the hood
