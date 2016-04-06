@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'db_text_search/full_text_search/abstract_adapter'
+require 'db_text_search/full_text/abstract_adapter'
 module DbTextSearch
-  class FullTextSearch
+  class FullText
     # Provides basic FTS support for MySQL.
     #
     # Runs a `MATCH AGAINST` query against a `FULLTEXT` index.

@@ -7,7 +7,7 @@ Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
   Exclude:
   - 'lib/db_text_search/case_insensitive/abstract_adapter.rb'
-  - 'lib/db_text_search/full_text_search/abstract_adapter.rb'
+  - 'lib/db_text_search/full_text/abstract_adapter.rb'
 Metrics/CyclomaticComplexity:
   Max: 7
 Metrics/MethodLength:

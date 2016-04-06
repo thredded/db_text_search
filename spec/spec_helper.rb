@@ -6,7 +6,7 @@ if ENV['TRAVIS'] && !(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx')
   require 'codeclimate_batch'
   require 'simplecov'
   ::SimpleCov.add_filter '/lib/db_text_search/case_insensitive/abstract_adapter.rb'
-  ::SimpleCov.add_filter '/lib/db_text_search/full_text_search/abstract_adapter.rb'
+  ::SimpleCov.add_filter '/lib/db_text_search/full_text/abstract_adapter.rb'
   CodeclimateBatch.start
 end
 require 'db_text_search'

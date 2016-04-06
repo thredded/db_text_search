@@ -55,15 +55,15 @@ See also: [API documentation][api-docs].
 Add an index:
 
 ```ruby
-DbTextSearch::FullTextSearch.add_index connection, :posts, :content
+DbTextSearch::FullText.add_index connection, :posts, :content
 # Options: name
 ```
 
 Perform a full-text search:
 
 ```ruby
-DbTextSearch::FullTextSearch.new(Post.published, :content).find('peace')
-DbTextSearch::FullTextSearch.new(Post.published, :content).find(%w(love kaori))
+DbTextSearch::FullText.new(Post.published, :content).find('peace')
+DbTextSearch::FullText.new(Post.published, :content).find(%w(love kaori))
 ```
 
 ## Under the hood

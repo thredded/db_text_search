@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'db_text_search/full_text_search/abstract_adapter'
+require 'db_text_search/full_text/abstract_adapter'
 module DbTextSearch
-  class FullTextSearch
+  class FullText
     # Provides basic FTS support for PostgreSQL.
     #
     # Runs a `@@ plainto_tsquery` query against a `gist(to_tsvector(...))` index.
     #
-    # @see DbTextSearch::FullTextSearch::DEFAULT_PG_TS_CONFIG
+    # @see DbTextSearch::FullText::DEFAULT_PG_TS_CONFIG
     # @api private
     class PostgresAdapter < AbstractAdapter
       # (see AbstractAdapter#find)

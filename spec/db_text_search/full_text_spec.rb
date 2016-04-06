@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 module DbTextSearch
-  RSpec.describe FullTextSearch do
+  RSpec.describe FullText do
     let!(:post_midsummer) { Post.create!(content: 'Love looks not with the eyes, but with the mind;') }
     let!(:post_richard) { Post.create!(content: 'An honest tale speeds best, being plainly told.') }
     let!(:post_well) { Post.create!(content: 'Love all, trust a few, do wrong to none.') }
@@ -11,8 +11,8 @@ module DbTextSearch
     around { |ex| force_index { ex.call } }
     it '#find(terms) with index' do
       index_name = :index_posts_content_fts
-      FullTextSearch.add_index(Post.connection, :posts, :content, name: index_name)
-      finder = FullTextSearch.new(Post, :content)
+      FullText.add_index(Post.connection, :posts, :content, name: index_name)
+      finder = FullText.new(Post, :content)
       expect(finder.find('love').to_a).to eq [post_midsummer, post_well]
       expect(finder.find(%w(honest plainly)).to_a).to eq [post_richard]
       expect(finder.find(%w(trust)).to_a).to eq [post_well]
@@ -26,7 +26,7 @@ module DbTextSearch
       it 'fails with ArgumentError on an unknown adapter' do
         mock_connection = Struct.new(:adapter_name).new('AnInvalidAdapter')
         expect {
-          FullTextSearch.add_index mock_connection, :posts, :content
+          FullText.add_index mock_connection, :posts, :content
         }.to raise_error(ArgumentError, 'Unsupported adapter AnInvalidAdapter')
       end
     end

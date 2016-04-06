@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'db_text_search/full_text_search/postgres_adapter'
-require 'db_text_search/full_text_search/mysql_adapter'
-require 'db_text_search/full_text_search/sqlite_adapter'
+require 'db_text_search/full_text/postgres_adapter'
+require 'db_text_search/full_text/mysql_adapter'
+require 'db_text_search/full_text/sqlite_adapter'
 
 module DbTextSearch
   # Provides basic full-text search for a list of terms, and FTS index creation.
-  class FullTextSearch
+  class FullText
     # The default Postgres text search config.
     DEFAULT_PG_TS_CONFIG = %q('english')
 
