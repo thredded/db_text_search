@@ -2,13 +2,16 @@
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
-if ENV['TRAVIS'] && !(defined?(RUBY_ENGINE) && RUBY_ENGINE == 'rbx')
-  require 'codeclimate_batch'
+
+if ENV['COVERAGE'] && !%w(rbx jruby).include?(RUBY_ENGINE)
   require 'simplecov'
-  ::SimpleCov.add_filter '/lib/db_text_search/case_insensitive/abstract_adapter.rb'
-  ::SimpleCov.add_filter '/lib/db_text_search/full_text/abstract_adapter.rb'
-  CodeclimateBatch.start
+  SimpleCov.command_name 'RSpec'
+  if ENV['TRAVIS'] && ENV['TRAVIS_BRANCH'] == 'master'
+    require 'codeclimate_batch'
+    CodeclimateBatch.start
+  end
 end
+
 require 'db_text_search'
 require 'fileutils'
 
@@ -50,7 +53,8 @@ def force_index
       ActiveRecord::Base.connection,
       postgres: -> { ['SET enable_seqscan=off', 'SET enable_seqscan=on'] },
       mysql:    -> { ['SET max_seeks_for_key=1', 'SET max_seeks_for_key=18446744073709551615'] },
-      sqlite:   -> {})
+      sqlite:   -> {}
+  )
   begin
     ActiveRecord::Base.connection.execute(enable_force_index).tap { |r| r && r.clear } if enable_force_index
     yield
@@ -64,7 +68,8 @@ def explain_index_expr(index_name)
       ActiveRecord::Base.connection,
       mysql:    -> { /\b(ref|index|range|fulltext)\b.*\b#{Regexp.escape index_name}\b/ },
       postgres: -> { "Index Scan using #{index_name}" },
-      sqlite:   -> { /USING (?:COVERING )?INDEX #{Regexp.escape index_name}\b/ })
+      sqlite:   -> { /USING (?:COVERING )?INDEX #{Regexp.escape index_name}\b/ }
+  )
 end
 
 def psql_su_cmd

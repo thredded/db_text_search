@@ -49,7 +49,8 @@ module DbTextSearch
           connection,
           mysql:    -> { MysqlAdapter },
           postgres: -> { PostgresAdapter },
-          sqlite:   -> { SqliteAdapter })
+          sqlite:   -> { SqliteAdapter }
+      )
     end
   end
 end

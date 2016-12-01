@@ -1,7 +1,11 @@
 if ENV['TRAVIS']
   group :test do
     gem 'codeclimate-test-reporter', require: false
-    gem 'codeclimate_batch', require: false
+    gem 'codeclimate_batch', require: false,
+        # TODO: use the released version once a new release that supports
+        # codeclimate-test-reporter v1.0+ is out.
+        git: 'https://github.com/sethherr/codeclimate_batch',
+        branch: 'new_simplecov'
   end
 else
   group :test, :development do

@@ -1,22 +1,8 @@
 language: ruby
+
 rvm:
-- 2.2.4
-env:
-  matrix:
-  # Username and password from http://docs.travis-ci.com/user/database-setup/
-  - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
-  - DB=mysql2     DB_USERNAME=root DB_PASSWORD=""
-  - DB=sqlite3
-  global:
-  # CODECLIMATE_REPO_TOKEN
-  - secure: "NbbrE0I7sD2HHzs1KPOuSdJNlxtmDAwCVvJlMtm3oIlPaHqqPV+wZEsjVrnpohyvkLi/QEmsFjPG5CnSntXs9e0s5dWz5vvqmaxqsufKb7uFRALBAaQ8s6x6SMAORDgpQtWS7HnIpNhjmpy4cqFxfbyOrfVFp7+G6huF5VPwTDfDjEgQZrMOs1XEGWfv+F3XQeCR55pnAR48/luqOPOZoQBfq2WGZj4oC50F+R4FCieRQsXW7PQO5F9NhdfSMoltaf77hzdNdhDbSaW/FszUS/MzuyGX/2phW4rXppNo41K7uS+Nhvglfs/x6siYFa/nC3YfFhUTJLzlo4CwQHi5AFK6BYid0QSpAIecmPzJdIqt4XF4lu5xtYM7IWIV2xCaoIwr47RkG9JdIoqpP5AvlYmscU1or2APSpK4y6mpK54s6iQaXYj1YOGazINMOZDknN2TRKDau9ye52X+dK6vqTwv9z+w+0LHL2fJH+CF6Ro2GL+R01dEbXfqfYDXCU4rzxDCNwqk+yj4mvJRMhY/ONUBJow84egtdXQBjhnQk1IW/J+WYbvtRHPOGR3edM1iln/61h+2KoCa/aoPHIeu6TQrKZvRbhpUYeQTjfyPFU2L7loQY1PEQz5tKxMnEwLUX3U2CkxJGDAayeIGEfkxfKo23ZRFpiOwmPQvgAXEtC8="
-before_install:
-- "gem install bundler --no-document"
-- >-
-  if [ "$DB" = 'postgresql' ]; then psql -d template1 -c "CREATE EXTENSION citext;" -U postgres; fi
-after_script:
-# NB: --groups must equal to the total number of jobs
-- bundle exec codeclimate-batch --groups 9
+- 2.2
+
 cache: bundler
 bundler_args: --path ../../vendor/bundle --without debug
 gemfile:
@@ -24,12 +10,23 @@ gemfile:
 - spec/gemfiles/rails_4_2.gemfile
 - spec/gemfiles/rails_5_0.gemfile
 
-# TODO: remove this once travis gets on with times and upgrades MySQL to 5.6.4+
+env:
+  matrix:
+  # Username and password from http://docs.travis-ci.com/user/database-setup/
+  - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
+  - DB=mysql2     DB_USERNAME=root DB_PASSWORD=""
+  - DB=sqlite3
+  global:
+  - COVERAGE=1
+  - TRAVIS=1
+
 dist: trusty
 sudo: required
-addons:
-  apt:
-    packages:
-    - mysql-server-5.6
-    - mysql-client-core-5.6
-    - mysql-client-5.6
+before_install:
+- bash .travis.setup.sh
+
+script:
+- bundle exec rspec --format d
+- bundle exec rubocop
+# NB: --groups must equal to the total number of jobs = dbs * gemfiles * rubies.
+- bundle exec codeclimate-batch --groups 9

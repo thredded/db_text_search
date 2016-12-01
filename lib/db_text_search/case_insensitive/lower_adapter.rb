@@ -31,7 +31,8 @@ module DbTextSearch
               connection.exec_query(quoted_create_index(connection, table_name, **options))
             },
             mysql:    unsupported,
-            sqlite:   unsupported)
+            sqlite:   unsupported
+        )
       end
     end
   end

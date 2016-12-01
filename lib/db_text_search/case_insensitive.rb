@@ -48,7 +48,8 @@ module DbTextSearch
             else
               ['TEXT COLLATE NOCASE', options]
             end
-          })
+          }
+      )
     end
 
     # Add an index for case-insensitive string search.
@@ -78,7 +79,8 @@ module DbTextSearch
           postgres: lower_or_insensitive,
           # Always use COLLATE NOCASE for SQLite, as we can't check if the column is case-sensitive.
           # It has no performance impact apart from slightly longer query strings for case-insensitive columns.
-          sqlite:   -> { CollateNocaseAdapter })
+          sqlite:   -> { CollateNocaseAdapter }
+      )
     end
 
     # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
@@ -93,7 +95,8 @@ module DbTextSearch
           connection,
           mysql:    -> { column.case_sensitive? },
           postgres: -> { column.sql_type !~ /citext/i },
-          sqlite:   -> { DbTextSearch.unsupported_adapter! connection })
+          sqlite:   -> { DbTextSearch.unsupported_adapter! connection }
+      )
     end
   end
 end

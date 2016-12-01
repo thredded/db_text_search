@@ -35,7 +35,7 @@ module TestTasks
           ::Process.wait pid
         end
       end
-      [$CHILD_STATUS && $CHILD_STATUS.exitstatus == 0, env]
+      [$CHILD_STATUS && $CHILD_STATUS.exitstatus.zero?, env]
     end
   end
 

@@ -1,5 +1,4 @@
 source 'https://rubygems.org'
 gemspec path: '../../'
 eval_gemfile './shared.gemfile'
-gem 'rails', '~> 4.2.5'
-gem 'schema_plus_pg_indexes', '>= 0.1.10'
+gem 'rails', '~> 4.2.7'

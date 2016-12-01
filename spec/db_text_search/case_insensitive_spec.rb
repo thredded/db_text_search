@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 require 'spec_helper'
 
 module DbTextSearch
@@ -43,6 +42,9 @@ module DbTextSearch
           end
 
           after :all do
+            if Name.connection.adapter_name =~ /mysql/i && column == :cs_name
+              next
+            end
             if Name.connection.adapter_name =~ /postgres/i
               # Work around https://github.com/rails/rails/issues/24359
               Name.connection.exec_query "DROP INDEX #{index_name}"
@@ -164,7 +166,8 @@ module DbTextSearch
               sqlite:   -> {
                 t.column :ci_name, 'VARCHAR(191) COLLATE NOCASE'
                 t.string :cs_name
-              })
+              }
+          )
         end
       end
       ActiveRecord::Base.connection.schema_cache.clear!
