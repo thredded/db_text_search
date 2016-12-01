@@ -12,13 +12,14 @@ gemfile:
 
 env:
   matrix:
-  # Username and password from http://docs.travis-ci.com/user/database-setup/
-  - env: DB=sqlite3
-  - env: DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
-  - env: DB=mysql2 DB_USERNAME="" DB_PASSWORD=""
-    # Remove `sudo:required` once mysql-server-5.6 is in the package whitelist:
-    # https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-trusty
-    sudo: required
+  include:
+    # Username and password from http://docs.travis-ci.com/user/database-setup/
+    - env: DB=sqlite3
+    - env: DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
+    - env: DB=mysql2 DB_USERNAME="" DB_PASSWORD=""
+      # Remove `sudo:required` once mysql-server-5.6 is in the package whitelist:
+      # https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-trusty
+      sudo: required
 
   global:
   - COVERAGE=1
