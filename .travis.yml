@@ -21,9 +21,7 @@ env:
   - TRAVIS=1
 
 dist: trusty
-sudo: required
-before_install:
-- bash .travis.setup.sh
+sudo: false
 
 script:
 - bundle exec rspec --format d
