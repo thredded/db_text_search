@@ -1,3 +1,8 @@
+## v0.2.1
+
+* Support for PostGIS adapters.
+  [#2](https://github.com/thredded/db_text_search/issues/2)
+
 ## v0.2.0
 
 * **Feature** Prefix matching via the new `CaseInsensitive#prefix` method.
