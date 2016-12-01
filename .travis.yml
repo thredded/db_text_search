@@ -17,12 +17,13 @@ env:
   # Username and password from http://docs.travis-ci.com/user/database-setup/
   - DB=sqlite3
   - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
-  - DB=mysql2 DB_USERNAME="" DB_PASSWORD=""
+  - DB=mysql2 DB_USERNAME=root DB_PASSWORD=""
 
 dist: trusty
 # Remove `sudo:required` once mysql-server-5.6 is in the package whitelist:
 # https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-trusty
 sudo: required
+group: edge
 
 script:
 - bundle exec rspec --format d
