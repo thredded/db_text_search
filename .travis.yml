@@ -10,22 +10,19 @@ gemfile:
 - spec/gemfiles/rails_4_2.gemfile
 - spec/gemfiles/rails_5_0.gemfile
 
-matrix:
-  include:
-    # Username and password from http://docs.travis-ci.com/user/database-setup/
-    - env: DB=sqlite3
-    - env: DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
-    - env: DB=mysql2 DB_USERNAME="" DB_PASSWORD=""
-      # Remove `sudo:required` once mysql-server-5.6 is in the package whitelist:
-      # https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-trusty
-      sudo: required
-
+env:
   global:
-  - COVERAGE=1
-  - TRAVIS=1
+  - COVERAGE=1 TRAVIS=1
+  matrix:
+  # Username and password from http://docs.travis-ci.com/user/database-setup/
+  - DB=sqlite3
+  - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
+  - DB=mysql2 DB_USERNAME="" DB_PASSWORD=""
 
 dist: trusty
-sudo: false
+# Remove `sudo:required` once mysql-server-5.6 is in the package whitelist:
+# https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-trusty
+sudo: required
 
 script:
 - bundle exec rspec --format d
