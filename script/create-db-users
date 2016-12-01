@@ -18,7 +18,10 @@ log() { if [ -t 1 ]; then echo -e >&2 "${GREEN}create-db-users: $@${RESET_COLOR}
 create_mysql_user() {
   if mysql -s -u"$USER" -p"$PASS" -e '' 2>/dev/null; then return; fi
   log "Creating MySQL '$USER' user. MySQL root password required."
-  mysql --verbose -uroot -p <<SQL
+  if [ -n "$TRAVIS" ]; then
+    mysql_flags=''
+  fi
+  mysql --verbose -uroot $mysql_flags <<SQL
 GRANT ALL PRIVILEGES ON \`db_text_search_gem_dev\`.* TO '$USER'@'localhost' IDENTIFIED BY '$PASS';
 GRANT ALL PRIVILEGES ON \`db_text_search_gem_test\`.* TO '$USER'@'localhost';
 SQL
