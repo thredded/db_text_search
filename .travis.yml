@@ -14,7 +14,7 @@ env:
   matrix:
   # Username and password from http://docs.travis-ci.com/user/database-setup/
   - DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
-  - DB=mysql2     DB_USERNAME=root DB_PASSWORD=""
+  - DB=mysql2 DB_USERNAME="" DB_PASSWORD=""
   - DB=sqlite3
   global:
   - COVERAGE=1
