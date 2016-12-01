@@ -24,7 +24,7 @@ module DbTextSearch
     case connection.adapter_name
       when /mysql/i
         mysql.call
-      when /postgres/i
+      when /postg/i # match all postgres and postgis adapters
         postgres.call
       when /sqlite/i
         sqlite.call

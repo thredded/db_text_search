@@ -45,7 +45,7 @@ module DbTextSearch
             if Name.connection.adapter_name =~ /mysql/i && column == :cs_name
               next
             end
-            if Name.connection.adapter_name =~ /postgres/i
+            if Name.connection.adapter_name =~ /postg/i
               # Work around https://github.com/rails/rails/issues/24359
               Name.connection.exec_query "DROP INDEX #{index_name}"
             else
@@ -57,7 +57,7 @@ module DbTextSearch
             force_index { expect(CaseInsensitive.new(Name, column).in('aBc')).to use_index(index_name) }
           end
           it 'uses an index for #prefix' do
-            if Name.connection.adapter_name =~ /postgres/i && column == :ci_name
+            if Name.connection.adapter_name =~ /postg/i && column == :ci_name
               skip 'PostgreSQL does not use a LIKE index on citext columns'
             end
             force_index { expect(CaseInsensitive.new(Name, column).prefix('A')).to use_index(index_name) }
