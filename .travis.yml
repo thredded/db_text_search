@@ -10,8 +10,7 @@ gemfile:
 - spec/gemfiles/rails_4_2.gemfile
 - spec/gemfiles/rails_5_0.gemfile
 
-env:
-  matrix:
+matrix:
   include:
     # Username and password from http://docs.travis-ci.com/user/database-setup/
     - env: DB=sqlite3
