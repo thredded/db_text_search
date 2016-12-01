@@ -6,10 +6,6 @@ ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 if ENV['COVERAGE'] && !%w(rbx jruby).include?(RUBY_ENGINE)
   require 'simplecov'
   SimpleCov.command_name 'RSpec'
-  if ENV['TRAVIS'] && ENV['TRAVIS_BRANCH'] == 'master'
-    require 'codeclimate_batch'
-    CodeclimateBatch.start
-  end
 end
 
 require 'db_text_search'
