@@ -20,8 +20,7 @@ module DbTextSearch
       end
 
       # A no-op, as we just use LIKE for sqlite.
-      def self.add_index(_connection, _table_name, _column_name, name:, pg_ts_config:)
-      end
+      def self.add_index(_connection, _table_name, _column_name, name:, pg_ts_config:); end
     end
   end
 end

@@ -16,32 +16,35 @@ Metrics/ModuleLength:
   Max: 130
   Exclude:
   - 'spec/**/*.rb'
-Style/AlignParameters:
+Metrics/BlockLength:
+  Exclude:
+  - 'spec/**/*.rb'
+Layout/AlignParameters:
+  Enabled: false
+Layout/CaseIndentation:
+  IndentOneStep: true
+Layout/IndentHash:
+  IndentationWidth: 4
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: false
+Layout/FirstParameterIndentation:
+  IndentationWidth: 4
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+  IndentationWidth: 4
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+  IndentationWidth: 4
+Layout/SpaceAroundOperators:
   Enabled: false
 Style/BlockDelimiters:
   Enabled: false
-Style/CaseIndentation:
-  IndentOneStep: true
-Style/IndentHash:
-  IndentationWidth: 4
-Style/SpaceInsideHashLiteralBraces:
-  Enabled: false
-Style/FirstParameterIndentation:
-  IndentationWidth: 4
 Style/Lambda:
   Enabled: false
-Style/MultilineOperationIndentation:
-  EnforcedStyle: indented
-  IndentationWidth: 4
-Style/MultilineMethodCallIndentation:
-  EnforcedStyle: indented
-  IndentationWidth: 4
 Style/MutableConstant:
   Enabled: false
 Style/SignalException:
   EnforcedStyle: semantic
-Style/SpaceAroundOperators:
-  Enabled: false
 Style/UnneededPercentQ:
   Enabled: false
 Metrics/LineLength:

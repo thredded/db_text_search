@@ -1,11 +1,12 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 module DbTextSearch
   RSpec.describe CaseInsensitive do
     column_cases = [['case-insensitive', :ci_name], ['case-sensitive', :cs_name]]
     describe '#find(value)' do
-      let!(:records) { %w(ABC abC abc).map { |name| Name.create!(ci_name: name, cs_name: name) } }
+      let!(:records) { %w[ABC abC abc].map { |name| Name.create!(ci_name: name, cs_name: name) } }
       column_cases.each do |(column_desc, column)|
         it "works with a #{column_desc} column" do
           finder = CaseInsensitive.new(Name, column)
@@ -15,7 +16,7 @@ module DbTextSearch
     end
 
     describe '#prefix(query)' do
-      let!(:records) { %w(Joe john jack jill x%zz).map { |name| Name.create!(ci_name: name, cs_name: name) } }
+      let!(:records) { %w[Joe john jack jill x%zz].map { |name| Name.create!(ci_name: name, cs_name: name) } }
       column_cases.each do |(column_desc, column)|
         it "works with a #{column_desc} column" do
           finder = CaseInsensitive.new(Name, column)
@@ -126,7 +127,7 @@ module DbTextSearch
       end
 
       it 'fails with ArgumentError on an unknown adapter and sqlite' do
-        %w(SQLite UnknownAdapter).each do |adapter_name|
+        %w[SQLite UnknownAdapter].each do |adapter_name|
           mock_connection = double('Connection', adapter_name: adapter_name, schema_cache: double(columns: []))
           expect {
             CaseInsensitive.column_case_sensitive? mock_connection, :names, :a_column

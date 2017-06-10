@@ -3,7 +3,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 ENV['RAILS_ENV'] = ENV['RACK_ENV'] = 'test'
 
-if ENV['COVERAGE'] && !%w(rbx jruby).include?(RUBY_ENGINE)
+if ENV['COVERAGE'] && !%w[rbx jruby].include?(RUBY_ENGINE)
   require 'simplecov'
   SimpleCov.command_name 'RSpec'
 end

@@ -14,8 +14,8 @@ module DbTextSearch
       FullText.add_index(Post.connection, :posts, :content, name: index_name)
       finder = FullText.new(Post, :content)
       expect(finder.search('love').to_a).to eq [post_midsummer, post_well]
-      expect(finder.search(%w(honest plainly)).to_a).to eq [post_richard]
-      expect(finder.search(%w(trust)).to_a).to eq [post_well]
+      expect(finder.search(%w[honest plainly]).to_a).to eq [post_richard]
+      expect(finder.search(%w[trust]).to_a).to eq [post_well]
       expect(finder.search('Shakespeare').to_a).to be_empty
       unless Post.connection.adapter_name =~ /sqlite/i
         expect(finder.search('love')).to use_index(index_name)
