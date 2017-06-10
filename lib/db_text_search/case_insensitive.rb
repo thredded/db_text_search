@@ -89,8 +89,9 @@ module DbTextSearch
     # @return [Boolean]
     # @note sqlite not supported.
     # @api private
-    def self.column_case_sensitive?(connection, table_name, column_name)
+    def self.column_case_sensitive?(connection, table_name, column_name) # rubocop:disable Metrics/AbcSize
       column = connection.schema_cache.columns(table_name).detect { |c| c.name == column_name.to_s }
+      fail "Column #{column_name.to_s.inspect} not found on table #{table_name.inspect}" if column.nil?
       DbTextSearch.match_adapter(
           connection,
           mysql:    -> { column.case_sensitive? },

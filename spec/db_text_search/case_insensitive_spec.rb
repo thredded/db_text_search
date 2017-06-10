@@ -128,7 +128,9 @@ module DbTextSearch
 
       it 'fails with ArgumentError on an unknown adapter and sqlite' do
         %w[SQLite UnknownAdapter].each do |adapter_name|
-          mock_connection = double('Connection', adapter_name: adapter_name, schema_cache: double(columns: []))
+          mock_connection = double('Connection',
+                                   adapter_name: adapter_name,
+                                   schema_cache: double(columns: [double('Column', name: 'a_column')]))
           expect {
             CaseInsensitive.column_case_sensitive? mock_connection, :names, :a_column
           }.to raise_error(ArgumentError, "Unsupported adapter #{adapter_name}")
