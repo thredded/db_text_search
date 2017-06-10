@@ -1,3 +1,8 @@
+## v0.2.2
+
+* Raises a more helpful error if the column is not found when calling
+  `DbTextSearch::CaseInsensitive`.
+
 ## v0.2.1
 
 * Support for PostGIS adapters.
