@@ -22,6 +22,11 @@ module DbTextSearch
                      escaped_query
       end
 
+      # (see AbstractAdapter#column_for_order)
+      def column_for_order(asc_or_desc)
+        Arel.sql("#{quoted_scope_column} COLLATE NOCASE #{asc_or_desc}")
+      end
+
       # (see AbstractAdapter.add_index)
       def self.add_index(connection, table_name, column_name, options = {})
         # TODO: Switch to the native Rails solution once it's landed, as the current one requires SQL dump format.

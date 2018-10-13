@@ -26,6 +26,16 @@ module DbTextSearch
       end
     end
 
+    describe '#column_for_order(asc_or_desc)' do
+      let!(:records) { %w[ABCz abCa abce].map { |name| Name.create!(ci_name: name, cs_name: name) } }
+      column_cases.each do |(column_desc, column)|
+        it "orders asc correctly with a #{column_desc} column" do
+          case_insensitive = CaseInsensitive.new(Name, column)
+          expect(Name.all.order(case_insensitive.column_for_order(:asc)).map(&:cs_name)).to eq(%w[abCa abce ABCz])
+        end
+      end
+    end
+
     describe '.add_index' do
       column_cases.each do |(column_desc, column)|
         index_name = :an_index
