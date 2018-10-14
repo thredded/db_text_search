@@ -3,6 +3,10 @@
 * Raises a more helpful error if the column is not found when calling
   `DbTextSearch::CaseInsensitive`.
 
+## v0.3.0
+
+* * **Feature** Case insensitive sorting via the new `CaseInsensitive#column_for_order(asc_or_desc)` method. Use it like `SomeModel.some_scope.order(CaseInsensitive.new(SomeModel, :some_field).column_for_order(:asc))`
+
 ## v0.2.1
 
 * Support for PostGIS adapters.
