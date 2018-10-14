@@ -2,7 +2,6 @@ The checklist for releasing a new version of db_text_search.
 
 Pre-requisites for the releaser:
 
-* The [gem-release gem](https://github.com/svenfuchs/gem-release): `gem install gem-release`.
 * Push access to RubyGems.
 
 Release checklist:
@@ -13,6 +12,6 @@ Release checklist:
 - [ ] Tag the release and push it to rubygems:
 
   ```bash
-  gem tag && gem release
+  rake release
   ```
 - [ ] Copy the release notes from the changelog to [GitHub Releases](https://github.com/thredded/thredded/releases).
