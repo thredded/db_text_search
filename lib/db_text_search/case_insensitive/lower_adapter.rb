@@ -17,6 +17,11 @@ module DbTextSearch
         @scope.where "LOWER(#{quoted_scope_column}) LIKE LOWER(?)", "#{sanitize_sql_like(query)}%"
       end
 
+      # (see AbstractAdapter#column_for_order)
+      def column_for_order(asc_or_desc)
+        Arel.sql("LOWER(#{quoted_scope_column}) #{asc_or_desc}")
+      end
+
       # (see AbstractAdapter.add_index)
       def self.add_index(connection, table_name, column_name, options = {})
         unsupported = -> { DbTextSearch.unsupported_adapter! connection }

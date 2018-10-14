@@ -5,7 +5,7 @@ require 'spec_helper'
 module DbTextSearch
   RSpec.describe CaseInsensitive do
     column_cases = [['case-insensitive', :ci_name], ['case-sensitive', :cs_name]]
-    describe '#find(value)' do
+    describe '#in(value)' do
       let!(:records) { %w[ABC abC abc].map { |name| Name.create!(ci_name: name, cs_name: name) } }
       column_cases.each do |(column_desc, column)|
         it "works with a #{column_desc} column" do
@@ -22,6 +22,16 @@ module DbTextSearch
           finder = CaseInsensitive.new(Name, column)
           expect(finder.prefix('Jo').to_a).to eq records.first(2)
           expect(finder.prefix('x%Z').to_a).to eq [records.last]
+        end
+      end
+    end
+
+    describe '#column_for_order(asc_or_desc)' do
+      let!(:records) { %w[ABCz abCa abce].map { |name| Name.create!(ci_name: name, cs_name: name) } }
+      column_cases.each do |(column_desc, column)|
+        it "orders asc correctly with a #{column_desc} column" do
+          case_insensitive = CaseInsensitive.new(Name, column)
+          expect(Name.all.order(case_insensitive.column_for_order(:asc)).map(&:cs_name)).to eq(%w[abCa abce ABCz])
         end
       end
     end

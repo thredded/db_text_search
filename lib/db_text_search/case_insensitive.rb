@@ -29,6 +29,13 @@ module DbTextSearch
       @adapter.prefix(query)
     end
 
+    # @param asc_or_desc [Symbol]
+    # @return [Arel::Collectors::SQLString] a string to be used within an `.order()`
+    def column_for_order(asc_or_desc)
+      fail 'Pass either :asc or :desc' unless %i[asc desc].include?(asc_or_desc)
+      @adapter.column_for_order(asc_or_desc)
+    end
+
     # Adds a case-insensitive column to the given table.
     # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]
     # @param table_name [String, Symbol]

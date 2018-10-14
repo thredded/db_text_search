@@ -30,6 +30,13 @@ module DbTextSearch
         fail 'abstract'
       end
 
+      # @param asc_or_desc [Symbol]
+      # @return [Arel::Collectors::SQLString]
+      # @abstract
+      def column_for_order(asc_or_desc)
+        fail 'abstract'
+      end
+
       # Add an index for case-insensitive string search.
       #
       # @param connection [ActiveRecord::ConnectionAdapters::AbstractAdapter]

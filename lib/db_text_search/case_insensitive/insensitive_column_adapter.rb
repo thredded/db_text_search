@@ -16,6 +16,11 @@ module DbTextSearch
         @scope.where "#{quoted_scope_column} LIKE ?", "#{sanitize_sql_like(query)}%"
       end
 
+      # (see AbstractAdapter#column_for_order)
+      def column_for_order(asc_or_desc)
+        Arel.sql("#{quoted_scope_column} #{asc_or_desc}")
+      end
+
       # (see AbstractAdapter.add_index)
       def self.add_index(connection, table_name, column_name, options = {})
         connection.add_index table_name, column_name, options
