@@ -30,7 +30,7 @@ module DbTextSearch
     end
 
     # @param asc_or_desc [Symbol]
-    # @return [Arel::SQLString] the scope of records with matching prefix.
+    # @return [Arel::Collectors::SQLString] a string to be used within an `.order()`
     def column_for_order(asc_or_desc)
       fail 'Pass either :asc or :desc' unless %i[asc desc].include?(asc_or_desc)
       @adapter.column_for_order(asc_or_desc)

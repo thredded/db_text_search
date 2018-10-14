@@ -31,7 +31,7 @@ module DbTextSearch
       end
 
       # @param asc_or_desc [Symbol]
-      # @return [Arel::Sql]
+      # @return [Arel::Collectors::SQLString]
       # @abstract
       def column_for_order(asc_or_desc)
         fail 'abstract'
