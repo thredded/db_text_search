@@ -11,7 +11,7 @@ DbTextSearch provides a unified interface on top of ActiveRecord for SQLite, MyS
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'db_text_search', '~> 0.2.2'
+gem 'db_text_search', '~> 0.3.0'
 ```
 
 ## Usage
