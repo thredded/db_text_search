@@ -1,0 +1,8 @@
+source 'https://rubygems.org'
+gemspec path: '../../'
+eval_gemfile '../../shared.gemfile'
+gem 'rails', '~> 6.0.0'
+
+# https://github.com/rails/rails/blob/v6.0.0/activerecord/lib/active_record/connection_adapters/sqlite3_adapter.rb#L13
+gem 'sqlite3', '~> 1.4'
+
