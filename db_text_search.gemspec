@@ -28,9 +28,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pg', '>= 0.18.4'
   s.add_development_dependency 'sqlite3', '>= 1.3.11'
 
-  s.add_development_dependency 'bundler', '~> 1.11'
   s.add_development_dependency 'rake', '~> 11.0'
   s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'simplecov'
-  s.add_development_dependency 'rubocop', '= 0.49.1'
 end
