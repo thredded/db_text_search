@@ -1,11 +1,16 @@
+## v0.3.1
+
+* Rails 6 support.
+  [ff16189f](https://github.com/thredded/db_text_search/commit/ff16189fdc7b1bf7b66e4bedc27483aaf3e75414)
+
+## v0.3.0
+
+* **Feature** Case insensitive sorting via the new `CaseInsensitive#column_for_order(asc_or_desc)` method. Use it like `SomeModel.some_scope.order(CaseInsensitive.new(SomeModel, :some_field).column_for_order(:asc))`
+
 ## v0.2.2
 
 * Raises a more helpful error if the column is not found when calling
   `DbTextSearch::CaseInsensitive`.
-
-## v0.3.0
-
-* * **Feature** Case insensitive sorting via the new `CaseInsensitive#column_for_order(asc_or_desc)` method. Use it like `SomeModel.some_scope.order(CaseInsensitive.new(SomeModel, :some_field).column_for_order(:asc))`
 
 ## v0.2.1
 
