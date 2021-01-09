@@ -84,7 +84,7 @@ matrix:
       rvm: 2.5.3
       env: DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
       services: postgresql
-    - gemfile: spec/gemfiles/rails_6_1.gemfile
+    - gemfile: spec/gemfiles/rails_6_0.gemfile
       rvm: 3.0.0
       env: DB=postgresql DB_USERNAME=postgres DB_PASSWORD=""
       services: postgresql
