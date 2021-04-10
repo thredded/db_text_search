@@ -23,7 +23,7 @@ module DbTextSearch
 
       # (see AbstractAdapter.add_index)
       def self.add_index(connection, table_name, column_name, options = {})
-        connection.add_index table_name, column_name, options
+        connection.add_index table_name, column_name, **options
       end
     end
   end
