@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pg', '>= 0.18.4'
   s.add_development_dependency 'sqlite3', '>= 1.3.11'
 
-  s.add_development_dependency 'rake', '~> 11.0'
+  s.add_development_dependency 'rake', '~> 13.0'
   s.add_development_dependency 'rspec', '~> 3.4'
   s.add_development_dependency 'simplecov'
 end
