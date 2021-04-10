@@ -1,3 +1,7 @@
+## v0.3.2
+
+* Allow Ruby 3.0
+
 ## v0.3.1
 
 * Rails 6 support.
