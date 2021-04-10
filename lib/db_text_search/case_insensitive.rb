@@ -42,7 +42,7 @@ module DbTextSearch
     # @param column_name [String, Symbol]
     # @param options [Hash] passed to ActiveRecord::ConnectionAdapters::SchemaStatements#add_index
     def self.add_ci_text_column(connection, table_name, column_name, options = {})
-      connection.add_column table_name, column_name, *DbTextSearch.match_adapter(
+      type, options = DbTextSearch.match_adapter(
           connection,
           mysql:    -> { [:text, options] },
           postgres: -> {
@@ -57,6 +57,7 @@ module DbTextSearch
             end
           }
       )
+      connection.add_column table_name, column_name, type, **options
     end
 
     # Add an index for case-insensitive string search.
