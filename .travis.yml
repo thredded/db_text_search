@@ -1,5 +1,6 @@
 language: ruby
-dist: xenial
+os: linux
+dist: bionic
 sudo: false
 
 before_install:
