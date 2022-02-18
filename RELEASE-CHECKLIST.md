@@ -14,4 +14,4 @@ Release checklist:
   ```bash
   rake release
   ```
-- [ ] Copy the release notes from the changelog to [GitHub Releases](https://github.com/thredded/thredded/releases).
+- [ ] Copy the release notes from the changelog to [GitHub Releases](https://github.com/thredded/db_text_search/releases).
