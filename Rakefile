@@ -40,7 +40,7 @@ module TestTasks
   end
 
   def gemfiles
-    Dir.glob('./spec/gemfiles/*.gemfile').sort
+    Dir.glob('./spec/gemfiles/*.gemfile').sort.reject { |path| path.include?('rubocop.gemfile') }
   end
 
   def dbs
