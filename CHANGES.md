@@ -1,6 +1,8 @@
-## Unreleased
+## Unreleased (to be v1)
 
-* We no longer test on Rails < 5.2, so please use v0.3.2 or lower for Rails 4.2 etc (however we haven't yet removed it from the gemspec, because it might still work)
+* We test on Rails 5.2, 6.0, 6.1, 7.0, so we're pretty sure these work.
+* We test on Rails main, to find out about any impacts of new changes, this doesn't mean we know that 7.1 is supported yet.
+* We no longer test on Rails < 5.2, so please use v0.3.2 or lower for guaranteed Rails 4.2 etc (however we haven't yet removed it from the gemspec, because it might still work)
 
 ## v0.3.2
 
