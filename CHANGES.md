@@ -1,4 +1,6 @@
-## Unreleased (to be v1)
+## Unreleased
+
+## v1.0.0
 
 * We test on Rails 5.2, 6.0, 6.1, 7.0, so we're pretty sure these work.
 * We test on Rails main, to find out about any impacts of new changes, this doesn't mean we know that 7.1 is supported yet.
