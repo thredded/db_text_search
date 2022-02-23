@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.require_paths         = ['lib']
   s.required_ruby_version = '>= 2.1', '< 4.0'
 
-  s.add_dependency 'activerecord', '>= 4.1.15'
+  s.add_dependency 'activerecord', '>= 5.2.0'
 
   s.add_development_dependency 'mysql2', '>= 0.3.20'
   s.add_development_dependency 'pg', '>= 0.18.4'
